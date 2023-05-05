@@ -20,6 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Main class
 """
 
+import os
+import subprocess
+from tkinter import messagebox
 
 import psutil
 from re import search
@@ -42,6 +45,7 @@ from tkfilebrowser.autoscrollbar import AutoScrollbar
 from tkfilebrowser.path_button import PathButton
 from tkfilebrowser.tooltip import TooltipTreeWrapper
 from tkfilebrowser.recent_files import RecentFiles
+from tkinter import filedialog
 
 if OSNAME == 'nt':
     from win32com.shell import shell, shellcon
@@ -1527,3 +1531,21 @@ class FileBrowser(tk.Toplevel):
                     self._validate_multiple_sel()
                 else:
                     self._validate_single_sel()
+
+    # git initialize
+    def init_git(self):
+        sel = self.right_tree.selection()
+        if sel:
+            path = self.right_tree.item(sel, "text")
+            if os.path.isdir(path):
+                os.chdir(path)
+                subprocess.run(['git', 'init'])
+                messagebox.showinfo(title="Git Init", message="Git repository initialized successfully.")
+            else:
+                messagebox.showerror(title="Error", message="Selected item is not a directory.")
+        else:
+            messagebox.showerror(title="Error", message="No item selected.")
+
+
+            
+
