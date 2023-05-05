@@ -516,6 +516,7 @@ class FileBrowser(tk.Toplevel):
         self.entry.bind("<Escape>",
                         lambda e: self.listbox_frame.place_forget())
         self.entry.bind("<Down>", self._down)
+        self.entry.bind("<Button-3>", self._select_rightmouse) #우클릭 시
         self.entry.bind("<Return>", self.validate)
         self.entry.bind("<Right>", self._tab)
         self.entry.bind("<Tab>", self._tab)
@@ -880,6 +881,30 @@ class FileBrowser(tk.Toplevel):
         self.entry.selection_clear()
         self.entry.focus_set()
         self.entry.icursor("end")
+
+
+   
+
+    def _select_rightmouse(self, event, d): #우클릭시
+        # 파일 우클릭 시 나오는 메뉴를 담을 Menu 객체 생성
+       
+        mymenu = tk.Menu()
+        mymenu.add_command(label="열기")
+        mymenu.add_command(label="저장")
+        mymenu.add_separator()
+        mymenu.add_command(label="종료")
+
+        self.listbox.selection_clear(0, "end")
+        self.listbox.activate(self.listbox.nearest(event.y))
+        self.listbox.selection_set(self.listbox.nearest(event.y))
+
+        try:
+            mymenu.tk_popup(event.x_root, event.y_root, 0)
+        finally:
+            mymenu.grab_release()
+
+        
+        
 
     def _completion(self, action, modif, pos, prev_txt):
         """Complete the text in the path entry with existing folder/file names."""
@@ -1699,4 +1724,3 @@ class FileBrowser(tk.Toplevel):
 
 
             
-
