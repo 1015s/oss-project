@@ -1532,19 +1532,32 @@ class FileBrowser(tk.Toplevel):
                 else:
                     self._validate_single_sel()
 
-    # git initialize
-    def init_git(self):
-        sel = self.right_tree.selection()
-        if sel:
-            path = self.right_tree.item(sel, "text")
-            if os.path.isdir(path):
-                os.chdir(path)
-                subprocess.run(['git', 'init'])
-                messagebox.showinfo(title="Git Init", message="Git repository initialized successfully.")
-            else:
-                messagebox.showerror(title="Error", message="Selected item is not a directory.")
-        else:
-            messagebox.showerror(title="Error", message="No item selected.")
+#### Git ####
+    
+    ### folder ###
+    # git repo인지 check
+    def check_git_init(self, path):
+        if not os.path.exists(os.path.join(path, ".git")):
+            return False
+        return True
+
+    # git init
+    def git_init(self, path):
+        if not self.check_git_init(path):
+            messagebox.showinfo("Git initialized", "This folder is already a git repository.")
+            return False
+        
+        try:
+            subprocess.run(["git", "init", path])
+            messagebox.showinfo("Git initialized", "Git repository initialized successfully.")
+            return True
+        except:
+            messagebox.showerror("Git initialization failed", "Failed to initialize git repository.")
+            return False
+    
+    
+
+
 
 
             
