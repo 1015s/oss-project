@@ -1532,19 +1532,170 @@ class FileBrowser(tk.Toplevel):
                 else:
                     self._validate_single_sel()
 
-    # git initialize
-    def init_git(self):
-        sel = self.right_tree.selection()
-        if sel:
-            path = self.right_tree.item(sel, "text")
-            if os.path.isdir(path):
-                os.chdir(path)
-                subprocess.run(['git', 'init'])
-                messagebox.showinfo(title="Git Init", message="Git repository initialized successfully.")
-            else:
-                messagebox.showerror(title="Error", message="Selected item is not a directory.")
+#### Git ####
+    
+    ### folder ###
+    # git repo인지 check
+    def check_git_init(self, path):
+        if not os.path.exists(os.path.join(path, ".git")):
+            return False
+        return True
+
+    # git init
+    def git_init(self, path):
+        if not self.check_git_init(path):
+            messagebox.showinfo("Git initialized", "This folder is already a git repository.")
+            return False
+        
+        try:
+            subprocess.run(["git", "init", path])
+            messagebox.showinfo("Git initialized", "Git repository initialized successfully.")
+            return True
+        except:
+            messagebox.showerror("Git initialization failed", "Failed to initialize git repository.")
+            return False
+    
+    ### file ###
+    # file의 git status check
+    def check_file_status(self, file_path):
+        # 해당 파일이 속한 폴더 찾기
+        folder_path = os.path.abspath(os.path.join(file_path, os.pardir))
+
+        # 해당 폴더가 git repository에 연결되어 있는지 확인
+        if not self.check_git_init(folder_path):
+            print(f"{folder_path} is not a git repository")
+            return
+
+        # git status 실행
+        cmd = ["git", "status", "--porcelain", "--", file_path]
+        result = subprocess.check_output(cmd, cwd=folder_path)
+
+        # git status 결과 확인하여 파일 상태 변경
+        status = result.split()[0].decode()
+
+        return status, folder_path
+
+    # git add
+    def git_add(self, file_path, folder_path):
+
+        # git status 실행
+        cmd = ["git", "status", "--porcelain", "--", file_path]
+        result = subprocess.check_output(cmd, cwd=folder_path)
+
+        # git status 결과 확인하여 파일 상태 변경
+        status = result.split()[0].decode()
+        
+        if status == "??":
+            cmd = ["git", "add", "--", file_path]
+            subprocess.run(cmd, cwd=folder_path)
+            print(f"{file_path} is now being tracked")
+            return True
+        elif status == "M":
+            cmd = ["git", "add", "--", file_path]
+            subprocess.run(cmd, cwd=folder_path)
+            print(f"{file_path} is now staged")
+            return True
         else:
-            messagebox.showerror(title="Error", message="No item selected.")
+            print(f"{file_path} cannot do git add")
+            return False
+
+    # git restore
+    def git_restore(self, file_path, folder_path):
+        
+        # git status 실행
+        cmd = ["git", "status", "--porcelain", "--", file_path]
+        result = subprocess.check_output(cmd, cwd=folder_path)
+
+        # git status 결과 확인하여 파일 상태 변경
+        status = result.split()[0].decode()
+
+        if status == "M":
+            cmd = ["git", "restore", "--", file_path]
+            subprocess.run(cmd, cwd=folder_path)
+            print(f"{file_path} is now unmodified")
+            return True
+        else:
+            print(f"{file_path} cannot do git restore")
+            return False
+
+
+    # git restore --staged
+    def git_restore_staged(self, file_path, folder_path):
+
+        # git status 실행
+        cmd = ["git", "status", "--porcelain", "--", file_path]
+        result = subprocess.check_output(cmd, cwd=folder_path)
+
+        # git status 결과 확인하여 파일 상태 변경
+        status = result.split()[0].decode()
+        
+        if status == "M":
+            cmd = ["git", "restore", "--staged", "--", file_path]
+            subprocess.run(cmd, cwd=folder_path)
+            print(f"{file_path} is now modified")
+            return True
+        else:
+            print(f"{file_path} cannot do git restore --staged")
+            return False
+
+    # git rm -- cached
+    def git_rm_cached(self, file_path, folder_path):
+
+        # git status 실행
+        cmd = ["git", "status", "--porcelain", "--", file_path]
+        result = subprocess.check_output(cmd, cwd=folder_path)
+
+        # git status 결과 확인하여 파일 상태 변경
+        status = result.split()[0].decode()
+
+        if status == " ":
+            cmd = ["git", "rm", "--cached", "--", file_path]
+            subprocess.run(cmd, cwd=folder_path)
+            print(f"{file_path} is now untracked")
+            return True
+        else:
+            print(f"{file_path} cannot do git rm --cached")
+            return False
+    
+    # git rm
+    def git_rm(self, file_path, folder_path):
+
+        # git status 실행
+        cmd = ["git", "status", "--porcelain", "--", file_path]
+        result = subprocess.check_output(cmd, cwd=folder_path)
+
+        # git status 결과 확인하여 파일 상태 변경
+        status = result.split()[0].decode()
+
+        if status == " ":
+            cmd = ["git", "rm", "--", file_path]
+            subprocess.run(cmd, cwd=folder_path)
+            print(f"{file_path} is now removed")
+            return True
+        else:
+            print(f"{file_path} cannot do git rm")
+            return False
+        
+    # Renaming : git mv oldname newname
+    def git_mv(self, old_path, folder_path, new_name):
+
+        # git status 실행
+        cmd = ["git", "status", "--porcelain", "--", old_path]
+        result = subprocess.check_output(cmd, cwd=folder_path)
+
+        # git status 결과 확인하여 파일 상태 변경
+        status = result.split()[0].decode()
+        
+        if status == " ":
+            new_path = os.path.join(folder_path, new_name)
+
+            try:
+                subprocess.run(["git", "mv", old_path, new_path], cwd=folder_path)
+                print(f"{old_path} renamed to {new_name}")
+            except:
+                print(f"Failed to rename {old_path} to {new_name}")
+
+
 
 
             
