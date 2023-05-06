@@ -38,13 +38,13 @@ try:
 except ImportError:
     SCANDIR = False
 import traceback
-import tkfilebrowser.constants as cst
-from tkfilebrowser.constants import unquote, tk, ttk, key_sort_files, \
+import constants as cst
+from constants import unquote, tk, ttk, key_sort_files, \
     get_modification_date, display_modification_date, display_size
-from tkfilebrowser.autoscrollbar import AutoScrollbar
-from tkfilebrowser.path_button import PathButton
-from tkfilebrowser.tooltip import TooltipTreeWrapper
-from tkfilebrowser.recent_files import RecentFiles
+from autoscrollbar import AutoScrollbar
+from path_button import PathButton
+from tooltip import TooltipTreeWrapper
+from recent_files import RecentFiles
 from tkinter import filedialog
 
 if OSNAME == 'nt':
@@ -150,6 +150,7 @@ class FileBrowser(tk.Toplevel):
         self.hidden = ()
 
         # ---  style
+        
         style = ttk.Style(self)
         bg = style.lookup("TFrame", "background")
         style.layout("right.tkfilebrowser.Treeview.Item",
@@ -317,7 +318,7 @@ class FileBrowser(tk.Toplevel):
                                       style="left.tkfilebrowser.Treeview")
         wrapper = TooltipTreeWrapper(self.left_tree)
         self.left_tree.column("#0", width=150)
-        self.left_tree.heading("#0", text=_("Shortcuts"), anchor="w")
+        self.left_tree.heading("#0", text=_("Shortcuts12"), anchor="w")
         self.left_tree.grid(row=0, column=0, sticky="sewn")
 
         scroll_left = AutoScrollbar(left_pane, command=self.left_tree.yview)
@@ -424,7 +425,7 @@ class FileBrowser(tk.Toplevel):
                                 command=lambda: self._sort_by_location(False))
         self.right_tree.heading("size", text=_("Size"), anchor="w",
                                 command=lambda: self._sort_by_size(False))
-        self.right_tree.heading("date", text=_("Modified"), anchor="w",
+        self.right_tree.heading("date", text=_("hi"), anchor="w",
                                 command=lambda: self._sort_by_date(False))
         # columns
         self.right_tree.column("#0", width=250)
@@ -465,6 +466,13 @@ class FileBrowser(tk.Toplevel):
                    command=self.validate).pack(side="right")
         ttk.Button(frame_buttons, text=cancelbuttontext,
                    command=self.quit).pack(side="right", padx=4)
+        # --- 메뉴
+        self.menu = tk.Menu(self, tearoff=0)
+        self.menu.add_command(label="열기")
+        self.menu.add_command(label="저장")
+        self.menu.add_separator()
+        self.menu.add_command(label="종료")
+
 
         # ---  key browsing entry
         self.key_browse_var = tk.StringVar(self)
@@ -495,7 +503,8 @@ class FileBrowser(tk.Toplevel):
         # right tree
         self.right_tree.bind("<Double-1>", self._select)
         self.right_tree.bind("<Return>", self._select)
-        self.right_tree.bind("<Left>", self._go_left)
+        self.right_tree.bind("<Right>", self._go_left)
+        self.right_tree.bind("<Button-3>", self._select_rightmouse)
         if multiple_selection:
             self.right_tree.bind("<Control-a>", self._right_tree_select_all)
 
@@ -512,16 +521,17 @@ class FileBrowser(tk.Toplevel):
         # listbox
         self.listbox.bind("<FocusOut>",
                           lambda e: self.listbox_frame.place_forget())
+        
+
         # path entry
         self.entry.bind("<Escape>",
                         lambda e: self.listbox_frame.place_forget())
         self.entry.bind("<Down>", self._down)
-        self.entry.bind("<Button-3>", self._select_rightmouse) #우클릭 시
         self.entry.bind("<Return>", self.validate)
         self.entry.bind("<Right>", self._tab)
         self.entry.bind("<Tab>", self._tab)
         self.entry.bind("<Control-a>", self._select_all)
-
+        
         # key browse entry
         self.key_browse_entry.bind("<FocusOut>", self._key_browse_hide)
         self.key_browse_entry.bind("<Escape>", self._key_browse_hide)
@@ -814,6 +824,7 @@ class FileBrowser(tk.Toplevel):
 
     def _select(self, event):
         """display folder content on double click / Enter, validate if file."""
+        
         sel = self.right_tree.selection()
         if sel:
             sel = sel[0]
@@ -824,6 +835,9 @@ class FileBrowser(tk.Toplevel):
                 self.validate(event)
         elif self.mode == "opendir":
             self.validate(event)
+
+      
+
 
     def _unpost(self, event):
         """Hide self.key_browse_entry."""
@@ -885,24 +899,26 @@ class FileBrowser(tk.Toplevel):
 
    
 
-    def _select_rightmouse(self, event, d): #우클릭시
+    def _select_rightmouse(self, event): #우클릭시
         # 파일 우클릭 시 나오는 메뉴를 담을 Menu 객체 생성
        
-        mymenu = tk.Menu()
-        mymenu.add_command(label="열기")
-        mymenu.add_command(label="저장")
-        mymenu.add_separator()
-        mymenu.add_command(label="종료")
 
-        self.listbox.selection_clear(0, "end")
-        self.listbox.activate(self.listbox.nearest(event.y))
-        self.listbox.selection_set(self.listbox.nearest(event.y))
+        self.menu.tk_popup(event.x_root, event.y_root, 0)
+        print("Right mouse button was clicked")
 
-        try:
-            mymenu.tk_popup(event.x_root, event.y_root, 0)
-        finally:
-            mymenu.grab_release()
+        sel = self.right_tree.selection()
+        if sel:
+            sel = sel[0]
+            tags = self.right_tree.item(sel, "tags")
+            if ("folder" in tags) or ("folder_link" in tags):
+                print("Right mouse button was clicked")
+            elif self.mode != "opendir":
+                print("Right mouse button was clicked")
+        elif self.mode == "opendir":
+            print("Right mouse button was clicked")
 
+
+    
         
         
 
@@ -1723,4 +1739,4 @@ class FileBrowser(tk.Toplevel):
 
 
 
-            
+ 
