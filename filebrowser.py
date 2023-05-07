@@ -265,6 +265,8 @@ class FileBrowser(tk.Toplevel):
                                   selectbackground=sel_bg)
         self.listbox.pack(expand=True, fill="x")
 
+        
+
         # ---  path bar
         self.path_var = tk.StringVar(self)
         frame_bar = ttk.Frame(self)
@@ -318,7 +320,7 @@ class FileBrowser(tk.Toplevel):
                                       style="left.tkfilebrowser.Treeview")
         wrapper = TooltipTreeWrapper(self.left_tree)
         self.left_tree.column("#0", width=150)
-        self.left_tree.heading("#0", text=_("Shortcuts12"), anchor="w")
+        self.left_tree.heading("#0", text=_("Shortcuts"), anchor="w")
         self.left_tree.grid(row=0, column=0, sticky="sewn")
 
         scroll_left = AutoScrollbar(left_pane, command=self.left_tree.yview)
@@ -425,7 +427,7 @@ class FileBrowser(tk.Toplevel):
                                 command=lambda: self._sort_by_location(False))
         self.right_tree.heading("size", text=_("Size"), anchor="w",
                                 command=lambda: self._sort_by_size(False))
-        self.right_tree.heading("date", text=_("hi"), anchor="w",
+        self.right_tree.heading("date", text=_("Modified"), anchor="w",
                                 command=lambda: self._sort_by_date(False))
         # columns
         self.right_tree.column("#0", width=250)
@@ -466,13 +468,10 @@ class FileBrowser(tk.Toplevel):
                    command=self.validate).pack(side="right")
         ttk.Button(frame_buttons, text=cancelbuttontext,
                    command=self.quit).pack(side="right", padx=4)
-        # --- 메뉴
-        self.menu = tk.Menu(self, tearoff=0)
-        self.menu.add_command(label="열기")
-        self.menu.add_command(label="저장")
-        self.menu.add_separator()
-        self.menu.add_command(label="종료")
-
+        # --- 메뉴 생성
+        self.foldermenu = tk.Menu(self, tearoff=0)
+        self.filemenu = tk.Menu(self, tearoff=0)
+      
 
         # ---  key browsing entry
         self.key_browse_var = tk.StringVar(self)
@@ -504,7 +503,9 @@ class FileBrowser(tk.Toplevel):
         self.right_tree.bind("<Double-1>", self._select)
         self.right_tree.bind("<Return>", self._select)
         self.right_tree.bind("<Right>", self._go_left)
-        self.right_tree.bind("<Button-3>", self._select_rightmouse)
+        self.right_tree.bind("<Button-3>", self._select_rightmouse) #우클릭 bind
+
+
         if multiple_selection:
             self.right_tree.bind("<Control-a>", self._right_tree_select_all)
 
@@ -834,7 +835,8 @@ class FileBrowser(tk.Toplevel):
             elif self.mode != "opendir":
                 self.validate(event)
         elif self.mode == "opendir":
-            self.validate(event)
+            pass
+            #self.validate(event)
 
       
 
@@ -897,30 +899,37 @@ class FileBrowser(tk.Toplevel):
         self.entry.icursor("end")
 
 
-   
-
-    def _select_rightmouse(self, event): #우클릭시
-        # 파일 우클릭 시 나오는 메뉴를 담을 Menu 객체 생성
-       
-
-        self.menu.tk_popup(event.x_root, event.y_root, 0)
-        print("Right mouse button was clicked")
-
-        sel = self.right_tree.selection()
-        if sel:
-            sel = sel[0]
-            tags = self.right_tree.item(sel, "tags")
-            if ("folder" in tags) or ("folder_link" in tags):
-                print("Right mouse button was clicked")
-            elif self.mode != "opendir":
-                print("Right mouse button was clicked")
-        elif self.mode == "opendir":
-            print("Right mouse button was clicked")
-
-
+  
+    #우클릭시
     
+    def _select_rightmouse(self, event):    
+        x, y = event.x, event.y
+        element = self.right_tree.identify('item',x=x, y=y) # 마우스 우클릭한 위치에 해당하는 요소 반환
         
-        
+
+        if element:
+            sel = self.right_tree.selection()
+            sel = sel[0] if sel else None
+            if sel == element:
+                tags = self.right_tree.item(sel, "tags")
+
+                if ("folder" in tags) or ("folder_link" in tags): # folder일 경우
+                    self.foldermenu.delete(0, tk.END) 
+                    self.foldermenu.add_command(label="Create git repo", command=lambda: self.show_popup_create(element))
+                
+                    self.foldermenu.tk_popup(event.x_root, event.y_root, 0)
+                elif self.mode != "opendir": # file일 경우
+                    self.filemenu.delete(0, tk.END)
+                    self.filemenu.add_command(label="go to stage", command=self.show_popup_stage(element))
+                    self.filemenu.add_command(label="go to modified", command=self.show_popup_modified(element))
+                    self.filemenu.add_command(label="go to unmodified", command=self.show_popup_unmodified(element))
+                    self.filemenu.add_command(label="go to untracked", command=self.show_popup_untracked(element))
+                    self.filemenu.add_command(label="rename", command=self.show_popup_rename(element))
+                    self.filemenu.add_separator()
+                    self.filemenu.add_command(label="delete", command=self.show_popup_delete(element))
+
+                    self.filemenu.tk_popup(event.x_root, event.y_root, 0)
+
 
     def _completion(self, action, modif, pos, prev_txt):
         """Complete the text in the path entry with existing folder/file names."""
@@ -1572,6 +1581,60 @@ class FileBrowser(tk.Toplevel):
                     self._validate_multiple_sel()
                 else:
                     self._validate_single_sel()
+
+                    
+
+###show_popup_ 하나로 통일 예정 ###
+
+    def show_popup_create(self, path): #label="Create git repo"
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            self.git_init(path)
+
+    def show_popup_create(self, path): #label="go to stage"
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            
+
+    def show_popup_modified(self, path): #label="go to modified"
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            
+
+    def show_popup_unmodified(self, path): #label="go to unmodified"
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            
+
+    def show_popup_untracked(self, path):#label="go to untracked"
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            
+
+    def show_popup_rename(self, path): #label="rename"
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            
+    
+    def show_popup_delete(self, path): #label="delete"
+       
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            
+
+
 
 #### Git ####
     
