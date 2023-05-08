@@ -904,7 +904,7 @@ class FileBrowser(tk.Toplevel):
     
     def _select_rightmouse(self, event):    
         x, y = event.x, event.y
-        element = self.right_tree.identify('item',x=x, y=y) # 마우스 우클릭한 위치에 해당하는 요소 반환
+        element = self.right_tree.identify('item',x=x, y=y) # 마우스 우클릭한 위치에 해당하는 요소 반환 - 파일 경로
         
 
         if element:
@@ -916,9 +916,8 @@ class FileBrowser(tk.Toplevel):
                 if ("folder" in tags) or ("folder_link" in tags): # folder일 경우
                     self.foldermenu.delete(0, tk.END) 
                     self.foldermenu.add_command(label="Create git repo", command=lambda: self.show_popup_create(element))
-                
                     self.foldermenu.tk_popup(event.x_root, event.y_root, 0)
-                elif self.mode != "opendir": # file일 경우
+                elif self.mode == "openfile": # file일 경우
                     self.filemenu.delete(0, tk.END)
                     self.filemenu.add_command(label="go to stage", command=self.show_popup_stage(element))
                     self.filemenu.add_command(label="go to modified", command=self.show_popup_modified(element))
@@ -1584,57 +1583,6 @@ class FileBrowser(tk.Toplevel):
 
                     
 
-###show_popup_ 하나로 통일 예정 ###
-
-    def show_popup_create(self, path): #label="Create git repo"
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-            self.git_init(path)
-
-    def show_popup_create(self, path): #label="go to stage"
-        
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-            
-
-    def show_popup_modified(self, path): #label="go to modified"
-        
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-            
-
-    def show_popup_unmodified(self, path): #label="go to unmodified"
-        
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-            
-
-    def show_popup_untracked(self, path):#label="go to untracked"
-        
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-            
-
-    def show_popup_rename(self, path): #label="rename"
-        
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-            
-    
-    def show_popup_delete(self, path): #label="delete"
-       
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-            
-
-
 
 #### Git ####
     
@@ -1647,7 +1595,7 @@ class FileBrowser(tk.Toplevel):
 
     # git init
     def git_init(self, path):
-        if not self.check_git_init(path):
+        if self.check_git_init(path):
             messagebox.showinfo("Git initialized", "This folder is already a git repository.")
             return False
         
@@ -1658,6 +1606,7 @@ class FileBrowser(tk.Toplevel):
         except:
             messagebox.showerror("Git initialization failed", "Failed to initialize git repository.")
             return False
+
     
     ### file ###
     # file의 git status check
@@ -1801,5 +1750,53 @@ class FileBrowser(tk.Toplevel):
 
 
 
+###show_popup_ 하나로 통일 예정 ###
+
+    def show_popup_create(self, path): #label="Create git repo"
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            self.git_init(path)
+
+    def show_popup_stage(self, path): #label="go to stage"
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            
+
+    def show_popup_modified(self, path): #label="go to modified"
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            
+
+    def show_popup_unmodified(self, path): #label="go to unmodified"
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            
+
+    def show_popup_untracked(self, path):#label="go to untracked"
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            
+
+    def show_popup_rename(self, path): #label="rename"
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            
+    
+    def show_popup_delete(self, path): #label="delete"
+       
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
 
  
