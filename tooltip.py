@@ -22,7 +22,8 @@ when the mouse stays over long enough
 """
 
 
-from tkfilebrowser.constants import tk, ttk
+import tkinter as tk
+from tkinter import ttk
 from sys import platform
 
 

@@ -21,7 +21,7 @@ Path bar button class
 """
 
 
-from tkfilebrowser.constants import add_trace, remove_trace, ttk
+from constants import add_trace, remove_trace, ttk
 
 
 class PathButton(ttk.Button):

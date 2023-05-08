@@ -21,8 +21,8 @@ Functions
 """
 
 
-from tkfilebrowser.constants import _
-from tkfilebrowser.filebrowser import FileBrowser
+from constants import _
+from filebrowser import FileBrowser
 
 
 def askopendirname(parent=None, title=_("Open"), **kwargs):

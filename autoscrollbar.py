@@ -23,7 +23,8 @@ Scrollbar that hides automatically when not needed
 """
 
 
-from tkfilebrowser.constants import tk, ttk
+import tkinter as tk 
+from tkinter import ttk
 
 
 class AutoScrollbar(ttk.Scrollbar):
