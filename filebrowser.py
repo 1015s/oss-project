@@ -23,6 +23,7 @@ Main class
 import os
 import subprocess
 from tkinter import messagebox
+from tkinter import simpledialog
 
 import psutil
 from re import search
@@ -470,7 +471,10 @@ class FileBrowser(tk.Toplevel):
                    command=self.quit).pack(side="right", padx=4)
         # --- 메뉴 생성
         self.foldermenu = tk.Menu(self, tearoff=0)
-        self.filemenu = tk.Menu(self, tearoff=0)
+        self.filemenu_untracked = tk.Menu(self, tearoff=0)
+        self.filemenu_commited = tk.Menu(self, tearoff=0)
+        self.filemenu_modified = tk.Menu(self, tearoff=0)
+        self.filemenu_staged = tk.Menu(self, tearoff=0)
       
 
         # ---  key browsing entry
@@ -899,35 +903,6 @@ class FileBrowser(tk.Toplevel):
         self.entry.icursor("end")
 
 
-  
-    #우클릭시
-    
-    def _select_rightmouse(self, event):    
-        x, y = event.x, event.y
-        element = self.right_tree.identify('item',x=x, y=y) # 마우스 우클릭한 위치에 해당하는 요소 반환 - 파일 경로
-        
-
-        if element:
-            sel = self.right_tree.selection()
-            sel = sel[0] if sel else None
-            if sel == element:
-                tags = self.right_tree.item(sel, "tags")
-
-                if ("folder" in tags) or ("folder_link" in tags): # folder일 경우
-                    self.foldermenu.delete(0, tk.END) 
-                    self.foldermenu.add_command(label="Create git repo", command=lambda: self.show_popup_create(element))
-                    self.foldermenu.tk_popup(event.x_root, event.y_root, 0)
-                elif self.mode == "openfile": # file일 경우
-                    self.filemenu.delete(0, tk.END)
-                    self.filemenu.add_command(label="go to stage", command=self.show_popup_stage(element))
-                    self.filemenu.add_command(label="go to modified", command=self.show_popup_modified(element))
-                    self.filemenu.add_command(label="go to unmodified", command=self.show_popup_unmodified(element))
-                    self.filemenu.add_command(label="go to untracked", command=self.show_popup_untracked(element))
-                    self.filemenu.add_command(label="rename", command=self.show_popup_rename(element))
-                    self.filemenu.add_separator()
-                    self.filemenu.add_command(label="delete", command=self.show_popup_delete(element))
-
-                    self.filemenu.tk_popup(event.x_root, event.y_root, 0)
 
 
     def _completion(self, action, modif, pos, prev_txt):
@@ -1748,9 +1723,55 @@ class FileBrowser(tk.Toplevel):
             except:
                 print(f"Failed to rename {old_path} to {new_name}")
 
+    
+    #우클릭시
+
+    def _select_rightmouse(self, event):    
+        x, y = event.x, event.y
+        element = self.right_tree.identify('item',x=x, y=y) # 마우스 우클릭한 위치에 해당하는 요소 반환 - 파일 경로
+        
+
+        if element:
+            sel = self.right_tree.selection()
+            sel = sel[0] if sel else None
+            if sel == element:
+                tags = self.right_tree.item(sel, "tags")
+
+                if ("folder" in tags) or ("folder_link" in tags): # folder일 경우
+                    self.foldermenu.delete(0, tk.END) 
+                    self.foldermenu.add_command(label="Create git repo", command=lambda: self.show_popup_create(element))
+                    self.foldermenu.tk_popup(event.x_root, event.y_root, 0)
+                elif self.mode == "openfile": # file일 경우
+                    status, folder_path = self.check_file_status(element)
+                    if status is not None: #해당 파일의 상위 폴더가 git repo라면
+                        if status == "??": #untracked
+                            self.filemenu_untracked.delete(0, tk.END)
+                            self.filemenu_untracked.add_command(label="go to stage", command=lambda: self.show_popup_untracked(element))
+                            self.filemenu_untracked.tk_popup(event.x_root, event.y_root, 0)
+                        elif status == " ": #commited
+                            self.filemenu_commited.delete(0, tk.END)
+                            self.filemenu_commited.add_command(label="untrack", command=lambda: self.show_popup_commited(element, "untrack"))
+                            self.filemenu_commited.add_command(label="delete", command=lambda: self.show_popup_commited(element, "delete"))
+                            self.filemenu_commited.add_command(label="rename", command=lambda: self.show_popup_commited(element, "rename"))
+                            self.filemenu_commited.tk_popup(event.x_root, event.y_root, 0)
+                        elif status == "M": #modified
+                            self.filemenu_modified.delete(0, tk.END)
+                            self.filemenu_modified.add_command(label="go to stage", command=lambda: self.show_popup_modified(element, "go to stage"))
+                            self.filemenu_modified.add_command(label="undo", command=lambda: self.show_popup_modified(element, "undo"))
+                            self.filemenu_modified.tk_popup(event.x_root, event.y_root, 0)
+                        else: #staged
+                            self.filemenu_staged.delete(0, tk.END)
+                            self.filemenu_staged.add_command(label="unstage", command=lambda: self.show_popup_staged(element))
+                            self.filemenu_staged.tk_popup(event.x_root, event.y_root, 0)
 
 
-###show_popup_ 하나로 통일 예정 ###
+
+                   
+                    
+
+
+
+###show_popup_###
 
     def show_popup_create(self, path): #label="Create git repo"
         result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
@@ -1758,45 +1779,45 @@ class FileBrowser(tk.Toplevel):
             print(path)
             self.git_init(path)
 
-    def show_popup_stage(self, path): #label="go to stage"
+    def show_popup_untracked(self, path): 
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            print(path)
+            folder_path = os.path.dirname(path)
+            self.git_add(path, folder_path)
+
+    def show_popup_commited(self, path, label): 
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            folder_path = os.path.dirname(path)
+            if label == "untrack":
+                self.git_rm_cached(path, folder_path)
+            elif label == "delete":
+                self.git_rm(path, folder_path)
+            elif label == "rename":
+                new_name = simpledialog.askstring("Rename", "Enter new name")
+                self.git_mv(path, folder_path, new_name)
+            print(path)
+            
+
+    def show_popup_modified(self, path, label): 
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            folder_path = os.path.dirname(path)
+            if label == "go to stage":
+                self.git_add(path, folder_path)
+            elif label == "undo":
+                self.git_restore(path, folder_path)
+            print(path)
+            
+            
+
+    def show_popup_staged(self, path):
         
         result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
         if result:
             print(path)
-            
-
-    def show_popup_modified(self, path): #label="go to modified"
-        
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-            
-
-    def show_popup_unmodified(self, path): #label="go to unmodified"
-        
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-            
-
-    def show_popup_untracked(self, path):#label="go to untracked"
-        
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-            
-
-    def show_popup_rename(self, path): #label="rename"
-        
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-            
-    
-    def show_popup_delete(self, path): #label="delete"
-       
-        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
-        if result:
-            print(path)
-
- 
+            folder_path = os.path.dirname(path)
+            self.git_restore_staged(path, folder_path)
