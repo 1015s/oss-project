@@ -1563,7 +1563,7 @@ class FileBrowser(tk.Toplevel):
     
     ### folder ###
     # git repo인지 check
-    def check_git_managed(path):
+    def check_git_managed(self, path):
         git_dir = os.path.join(path, ".git")
         if os.path.exists(git_dir) and os.path.isdir(git_dir):
             return True
@@ -1802,12 +1802,12 @@ class FileBrowser(tk.Toplevel):
                             self.filemenu_commited.add_command(label="delete", command=lambda: self.show_popup_commited(element, "delete"))
                             self.filemenu_commited.add_command(label="rename", command=lambda: self.show_popup_commited(element, "rename"))
                             self.filemenu_commited.tk_popup(event.x_root, event.y_root, 0)
-                        elif status == "M": #modified
+                        elif status == " M": #modified
                             self.filemenu_modified.delete(0, tk.END)
                             self.filemenu_modified.add_command(label="go to stage", command=lambda: self.show_popup_modified(element, "go to stage"))
                             self.filemenu_modified.add_command(label="undo", command=lambda: self.show_popup_modified(element, "undo"))
                             self.filemenu_modified.tk_popup(event.x_root, event.y_root, 0)
-                        else: #staged
+                        elif status == "A" or "M": #staged
                             self.filemenu_staged.delete(0, tk.END)
                             self.filemenu_staged.add_command(label="unstage", command=lambda: self.show_popup_staged(element))
                             self.filemenu_staged.tk_popup(event.x_root, event.y_root, 0)
