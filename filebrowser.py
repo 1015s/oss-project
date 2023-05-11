@@ -1734,7 +1734,7 @@ class FileBrowser(tk.Toplevel):
     
     # 선택된 folder가 git과 연결된 최상위 폴더인지 확인
     # input : folder path
-    def is_git_top_level(folder_path):
+    def is_git_top_level(self, folder_path):
         # 해당 폴더의 Git 최상위 경로 확인
         cmd = ["git", "rev-parse", "--show-toplevel"]
         result = subprocess.run(cmd, cwd=folder_path, capture_output=True, text=True)
