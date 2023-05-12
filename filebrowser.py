@@ -1662,7 +1662,7 @@ class FileBrowser(tk.Toplevel):
         status = result.split()[0].decode()
         
         if status == "A" or status == "M":
-            cmd = ["git", "restore", "--staged", "--", file_path]
+            cmd = ["git", "reset", "HEAD", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
             print(f"{file_path} is now modified")
             return True
