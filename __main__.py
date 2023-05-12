@@ -35,10 +35,12 @@ except ImportError:
 
 
 root = tk.Tk()
-
+root.title("oss-project GUI git repository")
 style = ttk.Style(root)
 style.theme_use("clam")
-root.configure(bg=style.lookup('TFrame', 'background'))
+root.geometry("300x200")
+root.resizable(False, False)
+
 
 def c_open_file_old():
     rep = filedialog.askopenfilenames(parent=root, initialdir='/', initialfile='tmp',
@@ -82,14 +84,13 @@ def c_save():
                                        ("All files", "*")])
     print(rep)
 
+oss_label = tk.Label(root, text="oss-project", font=("Helvetica", 8))
+oss_label.place(relx=0.25, rely=0.05, anchor="ne")
 
-ttk.Label(root, text='Default dialogs').grid(row=0, column=0, padx=4, pady=4, sticky='ew')
-ttk.Label(root, text='tkfilebrowser dialogs').grid(row=0, column=1, padx=4, pady=4, sticky='ew')
-ttk.Button(root, text="Open files", command=c_open_file_old).grid(row=1, column=0, padx=4, pady=4, sticky='ew')
-ttk.Button(root, text="Open folder", command=c_open_dir_old).grid(row=2, column=0, padx=4, pady=4, sticky='ew')
-ttk.Button(root, text="Save file", command=c_save_old).grid(row=3, column=0, padx=4, pady=4, sticky='ew')
-ttk.Button(root, text="Open files", command=c_open_file).grid(row=1, column=1, padx=4, pady=4, sticky='ew')
-ttk.Button(root, text="Open folder", command=c_open_dir).grid(row=2, column=1, padx=4, pady=4, sticky='ew')
-ttk.Button(root, text="Save file", command=c_save).grid(row=3, column=1, padx=4, pady=4, sticky='ew')
+repo_label = tk.Label(root, text="GUI git repository", font=("Helvetica", 20,"bold"))
+repo_label.place(relx=0.5, rely=0.35, anchor="center")
+
+open_button = ttk.Button(root, text="start", command=c_open_file)
+open_button.place(relx=0.5, rely=0.8, anchor="center")
 
 root.mainloop()
