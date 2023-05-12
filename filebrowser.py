@@ -53,7 +53,6 @@ if OSNAME == 'nt':
 
 _ = cst._
 
-
 class Stats:
     """Fake stats class to create dummy stats for broken links."""
     def __init__(self, **kwargs):
@@ -68,9 +67,19 @@ class Stats:
 
 class FileBrowser(tk.Toplevel):
     """Filebrowser dialog class."""
+        #yuna commit버튼 눌렀을때 git repo가 맞는지 확인해주는 c_commit 함수 구현
+    def c_commit(event=None):
+        print("c_commit이 호출되었습니다")
+        path=FileBrowser._select_leftmouse.element#이게 지금 안됨.. path가 안전해짐
+        print("path입니다:"+path)#그래서 출력도 안됨
+        #path가 잘 전해진다면..
+        #if path: path가 있는것이므로 stagelist.py실행 else:path가 없으므로 에러메시지 출력
+    def double_click(event):
+        if event.num==1:
+         FileBrowser.c_commit()
     def __init__(self, parent, initialdir="", initialfile="", mode="openfile",
                  multiple_selection=False, defaultext="", title="Filebrowser",
-                 filetypes=[], okbuttontext=None, cancelbuttontext=_("Cancel"),
+                 filetypes=[], okbuttontext=None, cancelbuttontext=_("Cancel"),commitbuttontext=("Commit"),
                  foldercreation=True, **kw):
         """
         Create a filebrowser dialog.
@@ -469,12 +478,15 @@ class FileBrowser(tk.Toplevel):
                    command=self.validate).pack(side="right")
         ttk.Button(frame_buttons, text=cancelbuttontext,
                    command=self.quit).pack(side="right", padx=4)
+        ttk.Button(frame_buttons,text=commitbuttontext,
+                   command=self.c_commit).pack(side="right",padx=8)
         # --- 메뉴 생성
         self.foldermenu = tk.Menu(self, tearoff=0)
         self.filemenu_untracked = tk.Menu(self, tearoff=0)
         self.filemenu_commited = tk.Menu(self, tearoff=0)
         self.filemenu_modified = tk.Menu(self, tearoff=0)
         self.filemenu_staged = tk.Menu(self, tearoff=0)
+      
       
 
         # ---  key browsing entry
@@ -508,7 +520,8 @@ class FileBrowser(tk.Toplevel):
         self.right_tree.bind("<Return>", self._select)
         self.right_tree.bind("<Right>", self._go_left)
         self.right_tree.bind("<Button-3>", self._select_rightmouse) #우클릭 bind
-
+        #yuna 좌클릭 bind
+        self.right_tree.bind("<Double-Button-1>",self._select_leftmouse)
 
         if multiple_selection:
             self.right_tree.bind("<Control-a>", self._right_tree_select_all)
@@ -560,8 +573,13 @@ class FileBrowser(tk.Toplevel):
         self.lift()
         if mode == 'save':
             self.entry.selection_range(0, 'end')
-            self.entry.focus_set()
-
+            self.entry.focus_set() 
+    #yuna 좌클릭시 그 파일의 경로를 알아내기
+    def _select_leftmouse(self,event):
+        x,y=event.x,event.y
+        element=self.right_tree.identify('item',x=x,y=y)
+        print("이건 select_leftmouse출력입니윤"+element)
+        
     def _right_tree_select_all(self, event):
         if self.mode == 'opendir':
             tags = ['folder', 'folder_link']
@@ -901,9 +919,6 @@ class FileBrowser(tk.Toplevel):
         self.entry.selection_clear()
         self.entry.focus_set()
         self.entry.icursor("end")
-
-
-
 
     def _completion(self, action, modif, pos, prev_txt):
         """Complete the text in the path entry with existing folder/file names."""
