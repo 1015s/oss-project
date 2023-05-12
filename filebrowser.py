@@ -46,13 +46,13 @@ from autoscrollbar import AutoScrollbar
 from path_button import PathButton
 from tooltip import TooltipTreeWrapper
 from recent_files import RecentFiles
+from stagelist import *
 from tkinter import filedialog
-
+import tkinter as tk
 if OSNAME == 'nt':
     from win32com.shell import shell, shellcon
 
 _ = cst._
-
 
 class Stats:
     """Fake stats class to create dummy stats for broken links."""
@@ -65,12 +65,26 @@ class Stats:
         else:
             return self._prop[attr]
 
+#stagelist에 대한 인스턴스 생성
+#sroot = tk.Tk()  # 부모 윈도우 생성
+#stage_list = StageList(sroot)  # StageList의 인스턴스 생성
+#sroot.mainloop()  # Tkinter 이벤트 루프 시작
 
 class FileBrowser(tk.Toplevel):
     """Filebrowser dialog class."""
+    #스켈레톤
+    def check_git_managed():
+        pass
+    #에러메시지창
+    def error_message_window():
+        error_window=tk.Tk()
+        error_window.withdraw()
+        messagebox.showerror("!ERROR!", "부적절한 폴더/파일입니다!")
+        error_window.destroy()
+        
     def __init__(self, parent, initialdir="", initialfile="", mode="openfile",
                  multiple_selection=False, defaultext="", title="Filebrowser",
-                 filetypes=[], okbuttontext=None, cancelbuttontext=_("Cancel"),
+                 filetypes=[], okbuttontext=None, cancelbuttontext=_("Cancel"),commitbuttontext=("Commit은 마우스휠클릭"),
                  foldercreation=True, **kw):
         """
         Create a filebrowser dialog.
@@ -469,12 +483,14 @@ class FileBrowser(tk.Toplevel):
                    command=self.validate).pack(side="right")
         ttk.Button(frame_buttons, text=cancelbuttontext,
                    command=self.quit).pack(side="right", padx=4)
+        ttk.Label(frame_buttons,text=commitbuttontext).pack(side="right",padx=8)
         # --- 메뉴 생성
         self.foldermenu = tk.Menu(self, tearoff=0)
         self.filemenu_untracked = tk.Menu(self, tearoff=0)
         self.filemenu_commited = tk.Menu(self, tearoff=0)
         self.filemenu_modified = tk.Menu(self, tearoff=0)
         self.filemenu_staged = tk.Menu(self, tearoff=0)
+      
       
 
         # ---  key browsing entry
@@ -508,7 +524,8 @@ class FileBrowser(tk.Toplevel):
         self.right_tree.bind("<Return>", self._select)
         self.right_tree.bind("<Right>", self._go_left)
         self.right_tree.bind("<Button-3>", self._select_rightmouse) #우클릭 bind
-
+        #yuna 마우스휠클릭 bind, 여기에서 commit을 위한 마우스 이벤트 바꿀수 있음
+        self.right_tree.bind("<Button-2>",self._select_special_mouse)
 
         if multiple_selection:
             self.right_tree.bind("<Control-a>", self._right_tree_select_all)
@@ -560,8 +577,23 @@ class FileBrowser(tk.Toplevel):
         self.lift()
         if mode == 'save':
             self.entry.selection_range(0, 'end')
-            self.entry.focus_set()
-
+            self.entry.focus_set() 
+    #yuna 마우스휠클릭시 그 파일의 경로를 알아내고 stagelist.py실행하게 하는 함수
+    def _select_special_mouse(self,event):
+        x,y=event.x,event.y
+        element=self.right_tree.identify('item',x=x,y=y)
+        if element: #경로가 있다면
+            if self.check_git_managed(element)==True:#gitrepo가 맞는경우
+                #stagelist.py를 실행시키기위한 인스턴스 만들기
+                sroot=tk.Tk()
+                stage_list=StageList(sroot)
+                StageList.__init__(self,sroot)
+                sroot.mainloop()  # Tkinter 이벤트 루프 시작
+            else: #gitrepo가 아닌경우
+                FileBrowser.error_message_window()
+        else:#경로가 없는경우
+            FileBrowser.error_message_window()
+                 
     def _right_tree_select_all(self, event):
         if self.mode == 'opendir':
             tags = ['folder', 'folder_link']
@@ -901,9 +933,6 @@ class FileBrowser(tk.Toplevel):
         self.entry.selection_clear()
         self.entry.focus_set()
         self.entry.icursor("end")
-
-
-
 
     def _completion(self, action, modif, pos, prev_txt):
         """Complete the text in the path entry with existing folder/file names."""
