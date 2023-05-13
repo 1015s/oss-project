@@ -67,7 +67,7 @@ def c_save_old():
 
 def c_open_file():
     rep = askopenfilenames(parent=root, initialdir='/', initialfile='tmp',
-                           filetypes=[("Pictures", "*.png|*.jpg|*.JPG"),
+                           filetypes=[
                                       ("All files", "*")])
     print(rep)
 
