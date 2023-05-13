@@ -1823,24 +1823,31 @@ class FileBrowser(tk.Toplevel):
                     if status is not None: #해당 파일의 상위 폴더가 git repo라면
                         if status == "??": #untracked
                             self.filemenu_untracked.delete(0, tk.END)
+                            self.filemenu_untracked.add_command(label='untracked')
+                            self.filemenu_untracked.add_separator()  # 구분선 추가
                             self.filemenu_untracked.add_command(label="go to stage", command=lambda: self.show_popup_untracked(element))
                             self.filemenu_untracked.tk_popup(event.x_root, event.y_root, 0)
-                        elif status == " ": #commited
+                        elif status == " ": #committed
                             self.filemenu_commited.delete(0, tk.END)
+                            self.filemenu_commited.add_command(label='committed')
+                            self.filemenu_commited.add_separator()
                             self.filemenu_commited.add_command(label="untrack", command=lambda: self.show_popup_commited(element, "untrack"))
                             self.filemenu_commited.add_command(label="delete", command=lambda: self.show_popup_commited(element, "delete"))
                             self.filemenu_commited.add_command(label="rename", command=lambda: self.show_popup_commited(element, "rename"))
                             self.filemenu_commited.tk_popup(event.x_root, event.y_root, 0)
                         elif status == " M": #modified
                             self.filemenu_modified.delete(0, tk.END)
+                            self.filemenu_modified.add_command(label='modified')
+                            self.filemenu_modified.add_separator()
                             self.filemenu_modified.add_command(label="go to stage", command=lambda: self.show_popup_modified(element, "go to stage"))
                             self.filemenu_modified.add_command(label="undo", command=lambda: self.show_popup_modified(element, "undo"))
                             self.filemenu_modified.tk_popup(event.x_root, event.y_root, 0)
                         elif status == "A" or "M": #staged
                             self.filemenu_staged.delete(0, tk.END)
+                            self.filemenu_staged.add_command(label='staged')
+                            self.filemenu_staged.add_separator()
                             self.filemenu_staged.add_command(label="unstage", command=lambda: self.show_popup_staged(element))
                             self.filemenu_staged.tk_popup(event.x_root, event.y_root, 0)
-        
         
 ###show_popup_###
 
