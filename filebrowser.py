@@ -1893,6 +1893,7 @@ class FileBrowser(tk.Toplevel):
             print(path)
             folder_path = os.path.dirname(path)
             self.git_restore_staged(path, folder_path)
+     
     def clear_entry(self, event):
         pass
     
