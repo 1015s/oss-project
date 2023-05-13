@@ -583,11 +583,12 @@ class FileBrowser(tk.Toplevel):
         x,y=event.x,event.y
         element=self.right_tree.identify('item',x=x,y=y)
         if element: #경로가 있다면
-            if self.check_git_managed(element)==True:#gitrepo가 맞는경우
+            if self.check_git_managed(element)==True: # 오류발생 and self.is_git_top_level(element)==True:#gitrepo가 맞는경우
                 #stagelist.py를 실행시키기위한 인스턴스 만들기
                 sroot=tk.Tk()
                 stage_list=StageList(sroot)
                 StageList.__init__(self,sroot)
+                stage_list.listpane(element)
                 sroot.mainloop()  # Tkinter 이벤트 루프 시작
             else: #gitrepo가 아닌경우
                 FileBrowser.error_message_window()
@@ -1535,7 +1536,7 @@ class FileBrowser(tk.Toplevel):
             else:
                 self.result = (realpath(self.history[self._hist_index]),)
             self.quit()
-        else:  # mode == openfile
+        else:  # mode == openfiles
             if len(sel) == 1:
                 sel = sel[0]
                 tags = self.right_tree.item(sel, "tags")
@@ -1905,3 +1906,11 @@ class FileBrowser(tk.Toplevel):
             print(path)
             folder_path = os.path.dirname(path)
             self.git_restore_staged(path, folder_path)
+     
+    def clear_entry(self, event):
+        pass
+    
+    def show_entry(self, event):
+        pass
+
+        
