@@ -46,9 +46,10 @@ class StageList: #stage에 올라간 파일 list를 보여주는 gui
             self.entry.insert(0, "커밋 메세지 입력")
             
     def final_commit(commit_message,file_path):
+        final_message=commit_message
         try:
             # git commit 실행
-            cmd = ["git", "commit", "-m", commit_message, "--", file_path]
+            cmd = ["git", "commit", "-m", final_message, "--", file_path]
             subprocess.run(cmd, check=True)
             print("Git commit successful.")
             return True
