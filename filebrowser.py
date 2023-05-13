@@ -1815,21 +1815,27 @@ class FileBrowser(tk.Toplevel):
                 tags = self.right_tree.item(sel, "tags")
 
                 if ("folder" in tags) or ("folder_link" in tags): # folder일 경우
-                    self.foldermenu.delete(0, tk.END) 
-                    self.foldermenu.add_command(label="Create git repo", command=lambda: self.show_popup_create(element))
-                    self.foldermenu.tk_popup(event.x_root, event.y_root, 0)
+                    if(self.check_git_managed(element)):
+
+                        self.foldermenu.delete(0, tk.END) 
+                        self.foldermenu.add_command(label="<Already Git repository>")
+                        self.foldermenu.tk_popup(event.x_root, event.y_root, 0)
+                    else:
+                        self.foldermenu.delete(0, tk.END) 
+                        self.foldermenu.add_command(label="Create git repo", command=lambda: self.show_popup_create(element))
+                        self.foldermenu.tk_popup(event.x_root, event.y_root, 0)
                 elif self.mode == "openfile": # file일 경우
                     status, folder_path = self.check_file_status(element)
                     if status is not None: #해당 파일의 상위 폴더가 git repo라면
                         if status == "??": #untracked
                             self.filemenu_untracked.delete(0, tk.END)
-                            self.filemenu_untracked.add_command(label='untracked')
+                            self.filemenu_untracked.add_command(label='<untracked>')
                             self.filemenu_untracked.add_separator()  # 구분선 추가
                             self.filemenu_untracked.add_command(label="go to stage", command=lambda: self.show_popup_untracked(element))
                             self.filemenu_untracked.tk_popup(event.x_root, event.y_root, 0)
                         elif status == " ": #committed
                             self.filemenu_commited.delete(0, tk.END)
-                            self.filemenu_commited.add_command(label='committed')
+                            self.filemenu_commited.add_command(label='<committed>')
                             self.filemenu_commited.add_separator()
                             self.filemenu_commited.add_command(label="untrack", command=lambda: self.show_popup_commited(element, "untrack"))
                             self.filemenu_commited.add_command(label="delete", command=lambda: self.show_popup_commited(element, "delete"))
@@ -1837,14 +1843,14 @@ class FileBrowser(tk.Toplevel):
                             self.filemenu_commited.tk_popup(event.x_root, event.y_root, 0)
                         elif status == " M": #modified
                             self.filemenu_modified.delete(0, tk.END)
-                            self.filemenu_modified.add_command(label='modified')
+                            self.filemenu_modified.add_command(label='<modified>')
                             self.filemenu_modified.add_separator()
                             self.filemenu_modified.add_command(label="go to stage", command=lambda: self.show_popup_modified(element, "go to stage"))
                             self.filemenu_modified.add_command(label="undo", command=lambda: self.show_popup_modified(element, "undo"))
                             self.filemenu_modified.tk_popup(event.x_root, event.y_root, 0)
                         elif status == "A" or "M": #staged
                             self.filemenu_staged.delete(0, tk.END)
-                            self.filemenu_staged.add_command(label='staged')
+                            self.filemenu_staged.add_command(label='<staged>')
                             self.filemenu_staged.add_separator()
                             self.filemenu_staged.add_command(label="unstage", command=lambda: self.show_popup_staged(element))
                             self.filemenu_staged.tk_popup(event.x_root, event.y_root, 0)
