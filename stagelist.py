@@ -1,7 +1,7 @@
 import tkinter as tk
 import subprocess
 from tkinter import ttk
-
+import os
 stirng =""
 class StageList: #stage에 올라간 파일 list를 보여주는 gui
     def clear_entry(self):
@@ -36,13 +36,16 @@ class StageList: #stage에 올라간 파일 list를 보여주는 gui
     def listpane(self,element):
         print("listpane에 들어옴")
         global stirng
-        stirng=element
+        
         print("stirng입니다:"+stirng)
         cmd = ["git", "diff", "--cached", "--name-only"]
         result = subprocess.run(cmd, cwd=element, capture_output=True, text=True)
         staged_files = result.stdout.strip().splitlines()
         for item in staged_files:
             self.listbox.insert(tk.END, item)
+                # 파일의 절대 경로 반환
+        staged_file_paths = [os.path.join(element, file) for file in staged_files]
+        stirng=staged_file_paths
             
             
             
