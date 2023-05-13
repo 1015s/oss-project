@@ -59,8 +59,7 @@ class StageList: #stage에 올라간 파일 list를 보여주는 gui
         except subprocess.CalledProcessError as e:
             print(f"Git commit failed: {e}")
             return False
-root = tk.Tk()
-stage_list = StageList(root)
+
 #stage_list.show_entry()
 #root.mainloop()       
         
