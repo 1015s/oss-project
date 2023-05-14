@@ -83,7 +83,7 @@ class StageList: #stage에 올라간 파일 list를 보여주는 gui
         try:
             # git commit 실행
             cmd = ["git", "commit", "-m", final_message, "--", file_path]
-            subprocess.run(cmd, check=True)
+            subprocess.run(cmd, check=True,cwd=fol_str)
             print("Git commit successful.")
             self.toplevel.destroy()
             return True
