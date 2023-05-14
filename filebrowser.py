@@ -1796,6 +1796,14 @@ class FileBrowser(tk.Toplevel):
                             self.filemenu_commited.add_command(label="delete", command=lambda: self.show_popup_commited(element, "delete"))
                             self.filemenu_commited.add_command(label="rename", command=lambda: self.show_popup_commited(element, "rename"))
                             self.filemenu_commited.tk_popup(event.x_root, event.y_root, 0)
+                        elif status == "AM": #staged and modified
+                            self.filemenu_staged.delete(0, tk.END)
+                            self.filemenu_staged.add_command(label='<staged> and <modified>')
+                            self.filemenu_staged.add_separator()
+                            self.filemenu_staged.add_command(label="go to stage", command=lambda: self.show_popup_staged_modified(element, "go to stage"))
+                            self.filemenu_staged.add_command(label="undo", command=lambda: self.show_popup_staged_modified(element, "undo"))
+                            self.filemenu_staged.add_command(label="unstage", command=lambda: self.show_popup_staged_modified(element , "unstage"))
+                            self.filemenu_staged.tk_popup(event.x_root, event.y_root, 0)
                         elif status == " M": #modified
                             self.filemenu_modified.delete(0, tk.END)
                             self.filemenu_modified.add_command(label='<modified>')
@@ -1809,6 +1817,7 @@ class FileBrowser(tk.Toplevel):
                             self.filemenu_staged.add_separator()
                             self.filemenu_staged.add_command(label="unstage", command=lambda: self.show_popup_staged(element))
                             self.filemenu_staged.tk_popup(event.x_root, event.y_root, 0)
+                        
         
 ###show_popup_###
 
@@ -1855,7 +1864,21 @@ class FileBrowser(tk.Toplevel):
         if result:
             folder_path = os.path.dirname(path)
             self.git_restore_staged(path, folder_path)
-     
+
+
+    def show_popup_staged_modified(self, path, label):
+        
+        result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
+        if result:
+            folder_path = os.path.dirname(path)
+            if label == "go to stage":
+                self.git_add(path, folder_path)
+            elif label == "undo":
+                self.git_restore(path, folder_path)
+            elif label == "unstage":
+                self.git_restore_staged(path, folder_path)
+
+
     def clear_entry(self, event):
         pass
     
