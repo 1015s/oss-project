@@ -1779,7 +1779,6 @@ class FileBrowser(tk.Toplevel):
                         self.foldermenu.tk_popup(event.x_root, event.y_root, 0)
                 elif self.mode == "openfile": # file일 경우
                     status, folder_path = self.check_file_status(element)
-                    print(status)
                     
                     if status is not None: #해당 파일의 상위 폴더가 git repo라면
                         if status == "??": #untracked
@@ -1796,7 +1795,7 @@ class FileBrowser(tk.Toplevel):
                             self.filemenu_commited.add_command(label="delete", command=lambda: self.show_popup_commited(element, "delete"))
                             self.filemenu_commited.add_command(label="rename", command=lambda: self.show_popup_commited(element, "rename"))
                             self.filemenu_commited.tk_popup(event.x_root, event.y_root, 0)
-                        elif status == "AM": #staged and modified
+                        elif status == "AM" or status == "MM": #staged and modified
                             self.filemenu_staged.delete(0, tk.END)
                             self.filemenu_staged.add_command(label='<staged> and <modified>')
                             self.filemenu_staged.add_separator()
