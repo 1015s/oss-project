@@ -9,11 +9,13 @@ com_message=""
 file_name=""
 class StageList: #stage에 올라간 파일 list를 보여주는 gui
     def clear_entry(self):
+        print("clear entry 진입")
         global com_message
         if self.entry.get() == "커밋 메세지 입력":
             self.entry.delete(0, tk.END)
             
     def show_entry(self):
+        print("show entry 진입")
         global com_message
         if not self.entry.get():
             self.entry.insert(0, "커밋 메세지 입력")
@@ -22,6 +24,7 @@ class StageList: #stage에 올라간 파일 list를 보여주는 gui
             com_message=user_input
         return com_message
     def __init__(self, parent):
+        print("in it 진입")
         self.parent = parent
         self.toplevel = parent
         self.listbox = tk.Listbox(self.toplevel)
@@ -38,6 +41,7 @@ class StageList: #stage에 올라간 파일 list를 보여주는 gui
         
         
     def listpane(self,element):
+        print("listpane 진입")
         global fol_str
         fol_str=element
         cmd = ["git", "diff", "--cached", "--name-only"]
@@ -47,6 +51,7 @@ class StageList: #stage에 올라간 파일 list를 보여주는 gui
             self.listbox.insert(tk.END, item)
 
     def select_file(self,event):
+        print("select file 진입")
         global file_str
         global file_name
         global fol_str
@@ -63,6 +68,7 @@ class StageList: #stage에 올라간 파일 list를 보여주는 gui
             
 
     def final_commit(self):
+        print("final commit 진입")
         global com_message, file_str,fol_str,file_name
         com_message = self.show_entry()  # 커밋 메시지 가져오기
         file_path = file_str  # 선택된 파일 경로 가져오기
