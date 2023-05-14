@@ -1779,6 +1779,7 @@ class FileBrowser(tk.Toplevel):
                         self.foldermenu.tk_popup(event.x_root, event.y_root, 0)
                 elif self.mode == "openfile": # file일 경우
                     status, folder_path = self.check_file_status(element)
+                    print(status)
                     
                     if status is not None: #해당 파일의 상위 폴더가 git repo라면
                         if status == "??": #untracked
@@ -1814,13 +1815,11 @@ class FileBrowser(tk.Toplevel):
     def show_popup_create(self, path): #label="Create git repo"
         result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
         if result:
-            print(path)
             self.git_init(path)
 
     def show_popup_untracked(self, path): 
         result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
         if result:
-            print(path)
             folder_path = os.path.dirname(path)
             self.git_add(path, folder_path)
 
@@ -1836,7 +1835,6 @@ class FileBrowser(tk.Toplevel):
             elif label == "rename":
                 new_name = simpledialog.askstring("Rename", "Enter new name")
                 self.git_mv(path, folder_path, new_name)
-            print(path)
             
 
     def show_popup_modified(self, path, label): 
@@ -1848,7 +1846,6 @@ class FileBrowser(tk.Toplevel):
                 self.git_add(path, folder_path)
             elif label == "undo":
                 self.git_restore(path, folder_path)
-            print(path)
             
             
 
@@ -1856,7 +1853,6 @@ class FileBrowser(tk.Toplevel):
         
         result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
         if result:
-            print(path)
             folder_path = os.path.dirname(path)
             self.git_restore_staged(path, folder_path)
      
