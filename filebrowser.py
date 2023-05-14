@@ -1602,7 +1602,6 @@ class FileBrowser(tk.Toplevel):
     # git init
     def git_init(self, path):
         if self.check_git_managed(path):
-            messagebox.showinfo("Git initialized", "This folder is already a git repository.")
             return False
         
         try:
@@ -1622,7 +1621,7 @@ class FileBrowser(tk.Toplevel):
 
         # 해당 폴더가 git repository에 연결되어 있는지 확인
         if not self.check_git_managed(folder_path):
-            print(f"{folder_path} is not a git repository")
+            messagebox.showinfo("Folder Status", f"{folder_path} is not a git repository")
             return
 
         # git status 실행
@@ -1648,15 +1647,15 @@ class FileBrowser(tk.Toplevel):
         if status == "??":
             cmd = ["git", "add", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
-            print(f"{file_path} is now being tracked")
+            messagebox.showinfo("File Status", f"{file_path} is now being tracked")
             return True
-        elif status == " M":
+        elif status == " M" or status == "AM":
             cmd = ["git", "add", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
-            print(f"{file_path} is now staged")
+            messagebox.showinfo("File Status", f"{file_path} is now staged")
             return True
         else:
-            print(f"{file_path} cannot do git add")
+            messagebox.showinfo("File Status", f"{file_path} cannot do git add")
             return False
 
     # git restore
@@ -1670,13 +1669,13 @@ class FileBrowser(tk.Toplevel):
         # git status 결과 확인하여 파일 상태 변경
         status = result.split()[0].decode()
 
-        if status == " M":
+        if status == " M" or status == "AM":
             cmd = ["git", "restore", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
-            print(f"{file_path} is now unmodified")
+            messagebox.showinfo("File Status", f"{file_path} is now unmodified")
             return True
         else:
-            print(f"{file_path} cannot do git restore")
+            messagebox.showinfo("File Status", f"{file_path} cannot do git restore")
             return False
 
 
@@ -1691,13 +1690,13 @@ class FileBrowser(tk.Toplevel):
         # git status 결과 확인하여 파일 상태 변경
         status = result.split()[0].decode()
         
-        if status == "A" or status == "M":
+        if status == "A" or status == "M" or status == "AM":
             cmd = ["git", "reset", "HEAD", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
-            print(f"{file_path} is now modified")
+            messagebox.showinfo("File Status", f"{file_path} is now modified")
             return True
         else:
-            print(f"{file_path} cannot do git restore --staged")
+            messagebox.showinfo("File Status", f"{file_path} cannot do git restore --staged")
             return False
 
     # git rm -- cached
@@ -1714,10 +1713,10 @@ class FileBrowser(tk.Toplevel):
         if status == " ":
             cmd = ["git", "rm", "--cached", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
-            print(f"{file_path} is now untracked")
+            messagebox.showinfo("File Status", f"{file_path} is now untracked")
             return True
         else:
-            print(f"{file_path} cannot do git rm --cached")
+            messagebox.showinfo("File Status", f"{file_path} cannot do git rm --cached")
             return False
     
     # git rm
@@ -1734,10 +1733,10 @@ class FileBrowser(tk.Toplevel):
         if status == " ":
             cmd = ["git", "rm", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
-            print(f"{file_path} is now removed")
+            messagebox.showinfo("File Status", f"{file_path} is now removed")
             return True
         else:
-            print(f"{file_path} cannot do git rm")
+            messagebox.showinfo("File Status", f"{file_path} cannot do git rm")
             return False
         
     # Renaming : git mv oldname newname
@@ -1756,9 +1755,9 @@ class FileBrowser(tk.Toplevel):
 
             try:
                 subprocess.run(["git", "mv", old_path, new_path], cwd=folder_path)
-                print(f"{old_path} renamed to {new_path}")
+                messagebox.showinfo("File Status", f"{old_path} renamed to {new_path}")
             except:
-                print(f"Failed to rename {old_path} to {new_path}")
+                messagebox.showinfo("File Status", f"Failed to rename {old_path} to {new_path}")
 
     ##### commit    
     
@@ -1777,7 +1776,7 @@ class FileBrowser(tk.Toplevel):
     def staged_list(self, folder_path):
         # 해당 폴더가 git에 연결된 최상위 디렉토리 이면 commit 버튼 누를 수 있음 -> staged list 절대 경로 반환
         if not self.is_git_top_level(folder_path):
-            print(f"{folder_path} is not a top level git repository")
+            messagebox.showinfo("Folder Status", f"{folder_path} is not a top level git repository")
             return
         
         # Staging Area에 있는 파일 목록 가져오기
@@ -1795,10 +1794,10 @@ class FileBrowser(tk.Toplevel):
             # git commit 실행
             cmd = ["git", "commit", "-m", commit_message, "--", file_path]
             subprocess.run(cmd, check=True)
-            print("Git commit successful.")
+            messagebox.showinfo("File Status", "Git commit successful.")
             return True
         except subprocess.CalledProcessError as e:
-            print(f"Git commit failed: {e}")
+            messagebox.showinfo("File Status", f"Git commit failed: {e}")
             return False
         
 
