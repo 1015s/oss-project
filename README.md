@@ -30,16 +30,16 @@ They can be installed at once through requirements.txt.
 
 ## Installation
 
-1. Git clone this repository 
->> git clone https://github.com/1015s/oss-project.git
+1. Git clone this repository
+> git clone https://github.com/1015s/oss-project.git
 2. Creating a Virtual Environment
->> python -m venv venv
+> python -m venv venv
 3. Running a Virtual Environment
->> source venv/Scripts/activate
+> source venv/Scripts/activate
 4. Installing the required
->> pip install -r requirements.txt
+> pip install -r requirements.txt
 5. Run main
->> python \__main__.py
+> python \__main__.py
 
 <br>
 
