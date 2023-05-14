@@ -1629,52 +1629,34 @@ class FileBrowser(tk.Toplevel):
         result = subprocess.check_output(cmd, cwd=folder_path)
 
         # git status 결과 확인하여 파일 상태 변경
-        status = result.split()[0].decode() if result else None
+        status = result.decode()
+        if status != "":
+            status = result.decode()[:2]            
 
         return status, folder_path
 
     # git add
     # untracked, modified 일 때 실행
     def git_add(self, file_path, folder_path):
-
-        # git status 실행
-        cmd = ["git", "status", "-s", "--", file_path]
-        result = subprocess.check_output(cmd, cwd=folder_path)
-
-        # git status 결과 확인하여 파일 상태 변경
-        status = result.split()[0].decode()
         
-        if status == "??":
+        try:
             cmd = ["git", "add", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
-            messagebox.showinfo("File Status", f"{file_path} is now being tracked")
+            messagebox.showinfo("File Status", f"{file_path} is now being staged")
             return True
-        elif status == " M" or status == "AM":
-            cmd = ["git", "add", "--", file_path]
-            subprocess.run(cmd, cwd=folder_path)
-            messagebox.showinfo("File Status", f"{file_path} is now staged")
-            return True
-        else:
+        except:
             messagebox.showinfo("File Status", f"{file_path} cannot do git add")
             return False
 
     # git restore
     # modified 일 때 실행
     def git_restore(self, file_path, folder_path):
-        
-        # git status 실행
-        cmd = ["git", "status", "-s", "--", file_path]
-        result = subprocess.check_output(cmd, cwd=folder_path)
-
-        # git status 결과 확인하여 파일 상태 변경
-        status = result.split()[0].decode()
-
-        if status == " M" or status == "AM":
+        try:
             cmd = ["git", "restore", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
             messagebox.showinfo("File Status", f"{file_path} is now unmodified")
             return True
-        else:
+        except:
             messagebox.showinfo("File Status", f"{file_path} cannot do git restore")
             return False
 
@@ -1682,20 +1664,13 @@ class FileBrowser(tk.Toplevel):
     # git restore --staged
     # staged 일 때 실행
     def git_restore_staged(self, file_path, folder_path):
-
-        # git status 실행
-        cmd = ["git", "status", "-s", "--", file_path]
-        result = subprocess.check_output(cmd, cwd=folder_path)
-
-        # git status 결과 확인하여 파일 상태 변경
-        status = result.split()[0].decode()
         
-        if status == "A" or status == "M" or status == "AM":
+        try:
             cmd = ["git", "reset", "HEAD", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
-            messagebox.showinfo("File Status", f"{file_path} is now modified")
+            messagebox.showinfo("File Status", f"{file_path} is now modified or untracked")
             return True
-        else:
+        except:
             messagebox.showinfo("File Status", f"{file_path} cannot do git restore --staged")
             return False
 
@@ -1703,61 +1678,39 @@ class FileBrowser(tk.Toplevel):
     # committed or unmodified 파일
     def git_rm_cached(self, file_path, folder_path):
 
-        # git status 실행
-        cmd = ["git", "status", "-s", "--", file_path]
-        result = subprocess.check_output(cmd, cwd=folder_path)
-
-        # git status 결과 확인하여 파일 상태 변경
-        status = result.split()[0].decode()
-
-        if status == " ":
+        try:
             cmd = ["git", "rm", "--cached", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
             messagebox.showinfo("File Status", f"{file_path} is now untracked")
             return True
-        else:
+        except:
             messagebox.showinfo("File Status", f"{file_path} cannot do git rm --cached")
             return False
     
     # git rm
     # committed or unmodified 파일
     def git_rm(self, file_path, folder_path):
-
-        # git status 실행
-        cmd = ["git", "status", "-s", "--", file_path]
-        result = subprocess.check_output(cmd, cwd=folder_path)
-
-        # git status 결과 확인하여 파일 상태 변경
-        status = result.split()[0].decode()
-
-        if status == " ":
+        
+        try:
             cmd = ["git", "rm", "--", file_path]
             subprocess.run(cmd, cwd=folder_path)
             messagebox.showinfo("File Status", f"{file_path} is now removed")
             return True
-        else:
+        except:
             messagebox.showinfo("File Status", f"{file_path} cannot do git rm")
             return False
         
     # Renaming : git mv oldname newname
     # committed or unmodified 파일
     def git_mv(self, old_path, folder_path, new_path):
-
-        # git status 실행
-        cmd = ["git", "status", "-s", "--", old_path]
-        result = subprocess.check_output(cmd, cwd=folder_path)
-
-        # git status 결과 확인하여 파일 상태 변경
-        status = result.split()[0].decode()
         
-        if status == " ":
-            new_path = os.path.join(folder_path, new_path)
+        new_path = os.path.join(folder_path, new_path)
 
-            try:
-                subprocess.run(["git", "mv", old_path, new_path], cwd=folder_path)
-                messagebox.showinfo("File Status", f"{old_path} renamed to {new_path}")
-            except:
-                messagebox.showinfo("File Status", f"Failed to rename {old_path} to {new_path}")
+        try:
+            subprocess.run(["git", "mv", old_path, new_path], cwd=folder_path)
+            messagebox.showinfo("File Status", f"{old_path} renamed to {new_path}")
+        except:
+            messagebox.showinfo("File Status", f"Failed to rename {old_path} to {new_path}")
 
     ##### commit    
     
@@ -1826,6 +1779,8 @@ class FileBrowser(tk.Toplevel):
                         self.foldermenu.tk_popup(event.x_root, event.y_root, 0)
                 elif self.mode == "openfile": # file일 경우
                     status, folder_path = self.check_file_status(element)
+                    print(status)
+                    
                     if status is not None: #해당 파일의 상위 폴더가 git repo라면
                         if status == "??": #untracked
                             self.filemenu_untracked.delete(0, tk.END)
@@ -1833,7 +1788,7 @@ class FileBrowser(tk.Toplevel):
                             self.filemenu_untracked.add_separator()  # 구분선 추가
                             self.filemenu_untracked.add_command(label="go to stage", command=lambda: self.show_popup_untracked(element))
                             self.filemenu_untracked.tk_popup(event.x_root, event.y_root, 0)
-                        elif status == " ": #committed
+                        elif status == "": #committed
                             self.filemenu_commited.delete(0, tk.END)
                             self.filemenu_commited.add_command(label='<committed>')
                             self.filemenu_commited.add_separator()
@@ -1860,13 +1815,11 @@ class FileBrowser(tk.Toplevel):
     def show_popup_create(self, path): #label="Create git repo"
         result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
         if result:
-            print(path)
             self.git_init(path)
 
     def show_popup_untracked(self, path): 
         result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
         if result:
-            print(path)
             folder_path = os.path.dirname(path)
             self.git_add(path, folder_path)
 
@@ -1882,7 +1835,6 @@ class FileBrowser(tk.Toplevel):
             elif label == "rename":
                 new_name = simpledialog.askstring("Rename", "Enter new name")
                 self.git_mv(path, folder_path, new_name)
-            print(path)
             
 
     def show_popup_modified(self, path, label): 
@@ -1894,7 +1846,6 @@ class FileBrowser(tk.Toplevel):
                 self.git_add(path, folder_path)
             elif label == "undo":
                 self.git_restore(path, folder_path)
-            print(path)
             
             
 
@@ -1902,7 +1853,6 @@ class FileBrowser(tk.Toplevel):
         
         result = messagebox.askyesno("Confirmation", "정말 진행하시겠습니까?")
         if result:
-            print(path)
             folder_path = os.path.dirname(path)
             self.git_restore_staged(path, folder_path)
      
