@@ -85,7 +85,7 @@ Click the start button on the Welcome page
 2. Right click
 3. You can see the status of the file at the top of the menu
 
-<
+<br>
 
 ## License
 
