@@ -79,6 +79,14 @@ Click the start button on the Welcome page
 
 <br>
 
+### Show status
+
+1. Select the file you want
+2. Right click
+3. You can see the status of the file at the top of the menu
+
+<
+
 ## License
 
 Under GPL-3.0 license
