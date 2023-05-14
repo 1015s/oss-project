@@ -587,7 +587,7 @@ class FileBrowser(tk.Toplevel):
                 #stagelist.py를 실행시키기위한 인스턴스 만들기
                 sroot=tk.Tk()
                 stage_list=StageList(sroot)
-                StageList.__init__(self,sroot)
+                #StageList.__init__(self,sroot)
                 stage_list.listpane(element)
                 sroot.mainloop()  # Tkinter 이벤트 루프 시작
             else: #gitrepo가 아닌경우
