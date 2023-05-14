@@ -53,7 +53,7 @@ Click the start button on the Welcome page
 
 1. Select the file you want to create as a git repository
 2. Right-click
-3. Create git repository 선택
+3. To select a create git repository
 
 <br>
 
