@@ -1860,7 +1860,40 @@ class FileBrowser(tk.Toplevel):
             messagebox.showinfo("Git Status", f"Merge failed with error: {e}")
             return False    
     
+    ### Git Commit History
     
+    
+    ### Git clone from GitHub
+    
+    # public repo : input - clone 할 git repo address, 로컬 path -> output : git clone 수행 -> 결과 값에 따른 messagebox 띄움
+    def git_clone_public(self, repository_url, destination_path):
+        try:
+            cmd = ["git", "clone", repository_url, destination_path]
+            subprocess.run(cmd)
+            messagebox.showinfo("Git Clone Status", "Git clone completed successfully.")
+            return True
+
+        except subprocess.CalledProcessError as e:
+            messagebox.showinfo("Git Clone Status", f"Clone failed with error: {e}")
+            return False
+    
+    # private repo : input - clone 할 git repo address, 로컬 path, personal access token -> output : git clone 수행 -> 결과 값에 따른 messagebox
+    def git_clone_private(repository_url, destination_path, access_token):
+        try:
+            cmd = ["git", "clone", repository_url, destination_path]
+            env = {
+                "GIT_ASKPASS": "echo",  # 인증 정보 요청 시 터미널 대화식 프롬프트를 사용하지 않도록 설정
+                "GIT_TOKEN": access_token  # 액세스 토큰 설정
+            }
+            subprocess.run(cmd, env=env)
+            messagebox.showinfo("Git Clone Status", "Git clone completed successfully.")
+            return True
+
+        except subprocess.CalledProcessError as e:
+            messagebox.showinfo("Git Clone Status", f"Clone failed with error: {e}")
+            return False
+
+        
         
     #우클릭시
 
