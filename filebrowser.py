@@ -297,7 +297,7 @@ class FileBrowser(tk.Toplevel):
         self.path_bar.grid(row=0, column=0, sticky="ew")
         self.path_bar_buttons = []
         #self.b_new_folder = ttk.Button(frame_bar, image=self.im_new,command=self.create_folder)
-        self.b_commit_history = ttk.Button(frame_bar, text="Commit History")
+        self.b_commit_history = ttk.Button(frame_bar, text="Commit History", command=self.open_commit_history)
         #self.b_commit_history.grid(row=0, column=1, sticky="e")
         if self.foldercreation:
             #self.b_new_folder.grid(row=0, column=1, sticky="e")
@@ -2073,10 +2073,69 @@ class FileBrowser(tk.Toplevel):
                 self.git_restore_staged(path, folder_path)
 
 
+    ###commit history 창 생성###
+    def open_commit_history(self):
+        new_window = tk.Toplevel(self)  # 새로운 창 생성
+        new_window.geometry("700x500")
+
+        canvas = tk.Canvas(new_window)
+        scrollbar = tk.Scrollbar(new_window, command=canvas.yview)
+        canvas.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        #path 받아오기
+        path_strings = [button['text'] for button in self.path_bar_buttons]
+
+        path_list = []
+        for path in path_strings:
+            # 첫번째 항목의 마지막 글자를 삭제
+            if path == path_strings[0]:
+                path = path[:-1]
+            path_list.append(path)
+
+        path = "\\".join(path_list)
+        #mylist = self.git_commit_history(path)
+        #pathone = 'C:\\Users\\user\\Desktop\\oss-project'
+        #mylist = self.git_commit_history(pathone)
+        #print(mylist)
+        
+
+
+        # 노드 그리기
+        node_radius = 10
+        node_positions = [(50, 50), (50, 100), (50, 950)]  # 노드의 위치 예시
+        nodes = []
+        for x, y in node_positions:
+            node = canvas.create_oval(x - node_radius, y - node_radius, x + node_radius, y + node_radius, fill="red", tags="node")
+            nodes.append(node)
+
+        # 선 그리기
+        for i in range(len(nodes) - 1):
+            x1, y1 = canvas.coords(nodes[i])[0] + node_radius, canvas.coords(nodes[i])[1] + node_radius
+            x2, y2 = canvas.coords(nodes[i+1])[0] + node_radius, canvas.coords(nodes[i+1])[1] + node_radius
+            canvas.create_line(x1, y1, x2, y2, tags=("line", f"line{i}"))
+
+        # canvas와 scrollbar 연결
+        canvas.config(scrollregion=canvas.bbox("all"))
+        canvas.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        # 마우스 휠 이벤트 처리
+        canvas.bind("<MouseWheel>", lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
+
+        # 노드에 대한 선 숨기기
+        for i in range(len(nodes) - 1):
+            canvas.tag_lower(f"line{i}", "node")
+
+        new_window.mainloop()
+
+
+
+
     def clear_entry(self, event):
         pass
     
     def show_entry(self, event):
         pass
 
-        
+    
