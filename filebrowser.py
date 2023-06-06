@@ -296,10 +296,12 @@ class FileBrowser(tk.Toplevel):
         self.path_bar = ttk.Frame(frame_bar)
         self.path_bar.grid(row=0, column=0, sticky="ew")
         self.path_bar_buttons = []
-        self.b_new_folder = ttk.Button(frame_bar, image=self.im_new,
-                                       command=self.create_folder)
+        #self.b_new_folder = ttk.Button(frame_bar, image=self.im_new,command=self.create_folder)
+        self.b_commit_history = ttk.Button(frame_bar, text="Commit History")
+        #self.b_commit_history.grid(row=0, column=1, sticky="e")
         if self.foldercreation:
-            self.b_new_folder.grid(row=0, column=1, sticky="e")
+            #self.b_new_folder.grid(row=0, column=1, sticky="e")
+            self.b_commit_history.grid(row=0, column=1, sticky="e")
         if mode == "save":
             ttk.Label(self.path_bar, text=_("Folder: ")).grid(row=0, column=0)
             self.defaultext = defaultext
@@ -797,8 +799,8 @@ class FileBrowser(tk.Toplevel):
         self.right_tree.column("location", stretch=False, width=100)
         self.right_tree.column("size", stretch=False, width=85)
         self.right_tree.column("date", width=120)
-        if self.foldercreation:
-            self.b_new_folder.grid_remove()
+        #if self.foldercreation:
+        #    self.b_new_folder.grid_remove()
         extension = self.filetypes[self.filetype.get()]
         files = self._recent_files.get()
         self.right_tree.delete(*self.right_tree.get_children(""))
@@ -1083,8 +1085,8 @@ class FileBrowser(tk.Toplevel):
             self.right_tree.column("#0", width=w)
             self.right_tree.column("size", stretch=False, width=85)
             self.right_tree.column("date", width=120)
-            if self.foldercreation:
-                self.b_new_folder.grid()
+            #if self.foldercreation:
+            #    self.b_new_folder.grid()
         # reset history
         if reset:
             if not self._hist_index == -1:
@@ -1098,9 +1100,11 @@ class FileBrowser(tk.Toplevel):
         # disable new folder creation if no write access
         if self.foldercreation:
             if access(folder, W_OK):
-                self.b_new_folder.state(('!disabled',))
+                #self.b_new_folder.state(('!disabled',))
+                pass
             else:
-                self.b_new_folder.state(('disabled',))
+                #self.b_new_folder.state(('disabled',))
+                pass
         # clear self.right_tree
         self.right_tree.delete(*self.right_tree.get_children(""))
         self.right_tree.delete(*self.hidden)
@@ -1176,8 +1180,8 @@ class FileBrowser(tk.Toplevel):
             self.right_tree.column("#0", width=w)
             self.right_tree.column("size", stretch=False, width=85)
             self.right_tree.column("date", width=120)
-            if self.foldercreation:
-                self.b_new_folder.grid()
+            #if self.foldercreation:
+            #    self.b_new_folder.grid()
         # reset history
         if reset:
             if not self._hist_index == -1:
@@ -1191,9 +1195,11 @@ class FileBrowser(tk.Toplevel):
         # disable new folder creation if no write access
         if self.foldercreation:
             if access(folder, W_OK):
-                self.b_new_folder.state(('!disabled',))
+                #self.b_new_folder.state(('!disabled',))
+                pass
             else:
-                self.b_new_folder.state(('disabled',))
+                #self.b_new_folder.state(('disabled',))
+                pass
         # clear self.right_tree
         self.right_tree.delete(*self.right_tree.get_children(""))
         self.right_tree.delete(*self.hidden)
@@ -1279,8 +1285,8 @@ class FileBrowser(tk.Toplevel):
             self.right_tree.column("#0", width=w)
             self.right_tree.column("size", stretch=False, width=85)
             self.right_tree.column("date", width=120)
-            if self.foldercreation:
-                self.b_new_folder.grid()
+            #if self.foldercreation:
+            #    self.b_new_folder.grid()
         # reset history
         if reset:
             if not self._hist_index == -1:
@@ -1294,9 +1300,11 @@ class FileBrowser(tk.Toplevel):
         # disable new folder creation if no write access
         if self.foldercreation:
             if access(folder, W_OK):
-                self.b_new_folder.state(('!disabled',))
+                #self.b_new_folder.state(('!disabled',))
+                pass
             else:
-                self.b_new_folder.state(('disabled',))
+                #self.b_new_folder.state(('disabled',))
+                pass
         # clear self.right_tree
         self.right_tree.delete(*self.right_tree.get_children(""))
         self.right_tree.delete(*self.hidden)
