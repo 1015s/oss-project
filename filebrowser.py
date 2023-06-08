@@ -2098,10 +2098,10 @@ class FileBrowser(tk.Toplevel):
             path_list.append(path)
 
         path = "\\".join(path_list)
-        #mylist = self.git_commit_history(path)
+        mylist = self.git_commit_history(path)
         #pathone = 'C:\\Users\\user\\Desktop\\oss-project'
         #mylist = self.git_commit_history(pathone)
-        #print(mylist)
+        print(mylist)
         
 
 
