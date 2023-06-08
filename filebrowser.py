@@ -1875,24 +1875,27 @@ class FileBrowser(tk.Toplevel):
 
         # 현재 브랜치의 workflow 커밋 히스토리 가져오기
         cmd = ["git", "log", "--oneline", "--graph", "--branches", "--decorate", "--pretty=format:%h %an %s", current_branch]
-        result = subprocess.check_output(cmd, cwd=folder_path, text=True)
+        result = subprocess.check_output(cmd, cwd=folder_path, text=True, encoding='cp949')
 
         # 개행 문자로 분리하여 각 커밋의 작성자 이름과 메시지를 추출하여 리스트로 반환
         commit_history = []
         for line in result.strip().split('\n'):
-            commit_hash, author_name, message = line.split(' ', 2)
-            commit_history.append({
-                'hash': commit_hash,
-                'author': author_name,
-                'message': message
-            })
+            try:
+                commit_hash, author_name, message = line.split(' ', 2)
+                commit_history.append({
+                    'hash': commit_hash,
+                    'author': author_name,
+                    'message': message
+                })
+            except UnicodeDecodeError:
+                continue
 
         return commit_history
     
     # input - foler_path, commit_object_hash -> output : dict 타입으로 commit_hash, author_name, commit_date(ISO 8601 형식), commit_message 반환
     def commit_object_detail(self, folder_path, commit_hash):
         cmd = ["git", "show", "--no-patch", "--format=%an|%ad|%s", commit_hash]
-        result = subprocess.run(cmd, cwd=folder_path, capture_output=True, text=True)
+        result = subprocess.run(cmd, cwd=folder_path, capture_output=True, text=True, encoding='cp949')
 
         if result.returncode != 0:
             # Commit not found
