@@ -1889,7 +1889,7 @@ class FileBrowser(tk.Toplevel):
         # 현재 브랜치의 workflow 커밋 히스토리 가져오기
         cmd = ["git", "log", "--oneline", "--graph", "--branches", "--decorate", "--pretty=format:%h, %an, %s", current_branch]
         result = subprocess.check_output(cmd, cwd=folder_path, text=True, encoding='utf-8')
-        #print(result)
+        
 
         # 개행 문자로 분리하여 각 커밋의 작성자 이름과 메시지를 추출하여 리스트로 반환
         commit_history = []
@@ -1898,6 +1898,7 @@ class FileBrowser(tk.Toplevel):
                 if line.startswith('* '):
                     line = line[2:]  # "*" 제거
                 commit_hash, rest = line.split(',', 1)
+                commit_hash = commit_hash.strip().split(' ')[-1]  # 커밋 해시에서 불필요한 문자 제거
                 author_name, message = rest.lstrip().split(',', 1)
                 message = message.strip()
                 
@@ -1906,9 +1907,10 @@ class FileBrowser(tk.Toplevel):
                     'author': author_name,
                     'message': message
                 })
-                return commit_history
+                
             except (UnicodeDecodeError, ValueError):
                 continue
+        return commit_history
             
     
     # input - foler_path, commit_object_hash -> output : dict 타입으로 commit_hash, author_name, commit_date(ISO 8601 형식), commit_message 반환
