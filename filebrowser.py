@@ -1874,16 +1874,22 @@ class FileBrowser(tk.Toplevel):
     # input - folder_path, output - 현재 branchdml commit history - hash, 작성자 이름, 메시지 dic 타입의 list로 만들어서 반환
     def git_commit_history(self, folder_path):
         # 해당 폴더가 git repository에 연결되어 있는지 확인
+        
         if not self.check_git_managed(folder_path):
             messagebox.showinfo("Folder Status", f"{folder_path} is not a git repository")
             return None
+        
 
         # 현재 브랜치 이름 가져오기
         current_branch = subprocess.check_output(["git", "branch", "--show-current"], cwd=folder_path, text=True).strip()
+        #print(current_branch)
+        #print(folder_path)
+        
 
         # 현재 브랜치의 workflow 커밋 히스토리 가져오기
         cmd = ["git", "log", "--oneline", "--graph", "--branches", "--decorate", "--pretty=format:%h, %an, %s", current_branch]
         result = subprocess.check_output(cmd, cwd=folder_path, text=True, encoding='utf-8')
+        #print(result)
 
         # 개행 문자로 분리하여 각 커밋의 작성자 이름과 메시지를 추출하여 리스트로 반환
         commit_history = []
@@ -1900,8 +1906,11 @@ class FileBrowser(tk.Toplevel):
                     'author': author_name,
                     'message': message
                 })
+                print(commit_history[-1])
+                return commit_history
             except (UnicodeDecodeError, ValueError):
                 continue
+            
     
     # input - foler_path, commit_object_hash -> output : dict 타입으로 commit_hash, author_name, commit_date(ISO 8601 형식), commit_message 반환
     def commit_object_detail(self, folder_path, commit_hash):
@@ -2105,7 +2114,8 @@ class FileBrowser(tk.Toplevel):
         #pathone = 'C:\\Users\\user\\Desktop\\oss-project'
         #mylist = self.git_commit_history(pathone)
         print(mylist)
-        
+
+
 
 
         # 노드 그리기
