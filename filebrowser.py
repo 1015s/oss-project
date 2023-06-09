@@ -1906,7 +1906,6 @@ class FileBrowser(tk.Toplevel):
                     'author': author_name,
                     'message': message
                 })
-                print(commit_history[-1])
                 return commit_history
             except (UnicodeDecodeError, ValueError):
                 continue
