@@ -2092,7 +2092,6 @@ class FileBrowser(tk.Toplevel):
     ###commit history 창 생성###
 
     def open_commit_history(self):
-
         # Commit History 가져오기
         path_strings = [button['text'] for button in self.path_bar_buttons]
         path_list = []
@@ -2105,6 +2104,21 @@ class FileBrowser(tk.Toplevel):
         commit_history = self.git_commit_history(path)
         if commit_history is None:
             return
+
+        def show_status(commit, mylist):
+            status_window = tk.Toplevel(self)
+            status_window.geometry("400x100")
+            status_text = f"commit_hash: {mylist['commit_hash']}\n"
+            status_text += f"author_name: {mylist['author_name']}\n"
+            status_text += f"commit_date: {mylist['commit_date']}\n"
+            status_text += f"commit_message: {mylist['commit_message']}"
+            status_label = tk.Label(status_window, text=status_text)
+            status_label.pack()
+
+        def node_clicked(event, commit):
+            mylist = self.commit_object_detail(path, commit['hash'])
+            print(mylist)
+            show_status(commit, mylist)
 
         new_window = tk.Toplevel(self)  # 새로운 창 생성
         new_window.geometry("400x500")
@@ -2131,6 +2145,7 @@ class FileBrowser(tk.Toplevel):
             nodes.append(node)
             canvas.create_text(position[0] + node_radius + text_offset, position[1], anchor=tk.W,
                             text=f"{commit['author']}: {commit['message']}")
+            canvas.tag_bind(node, "<Button-1>", lambda event, commit=commit: node_clicked(event, commit))
 
         # 선 그리기
         for i in range(len(nodes) - 1):
@@ -2150,7 +2165,6 @@ class FileBrowser(tk.Toplevel):
             canvas.tag_lower(f"line{i}", "node")
 
         new_window.mainloop()
-
 
 
     def clear_entry(self, event):
