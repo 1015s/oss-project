@@ -2093,7 +2093,7 @@ class FileBrowser(tk.Toplevel):
 
     def open_commit_history(self):
 
-         # Commit History 가져오기
+        # Commit History 가져오기
         path_strings = [button['text'] for button in self.path_bar_buttons]
         path_list = []
         for path in path_strings:
@@ -2107,15 +2107,18 @@ class FileBrowser(tk.Toplevel):
             return
 
         new_window = tk.Toplevel(self)  # 새로운 창 생성
-        new_window.geometry("700x500")
-        
-        canvas = tk.Canvas(new_window)
-        scrollbar = tk.Scrollbar(new_window, command=canvas.yview)
-        canvas.configure(yscrollcommand=scrollbar.set)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        new_window.geometry("400x500")
 
-        
+        canvas = tk.Canvas(new_window)
+        scrollbar_y = tk.Scrollbar(new_window, command=canvas.yview)
+        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+        canvas.configure(yscrollcommand=scrollbar_y.set)
+
+        scrollbar_x = tk.Scrollbar(new_window, command=canvas.xview, orient=tk.HORIZONTAL)
+        scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X)
+        canvas.configure(xscrollcommand=scrollbar_x.set)
+
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         # 노드 그리기
         node_radius = 10
@@ -2123,9 +2126,11 @@ class FileBrowser(tk.Toplevel):
         node_positions = [(50, 50 + i * 50) for i in range(len(commit_history))]
         nodes = []
         for position, commit in zip(node_positions, commit_history):
-            node = canvas.create_oval(position[0] - node_radius, position[1] - node_radius, position[0] + node_radius, position[1] + node_radius, fill="red", tags="node")
+            node = canvas.create_oval(position[0] - node_radius, position[1] - node_radius, position[0] + node_radius,
+                                    position[1] + node_radius, fill="red", tags="node")
             nodes.append(node)
-            canvas.create_text(position[0] + node_radius + text_offset, position[1], anchor=tk.W, text=f"{commit['author']}: {commit['message']}")
+            canvas.create_text(position[0] + node_radius + text_offset, position[1], anchor=tk.W,
+                            text=f"{commit['author']}: {commit['message']}")
 
         # 선 그리기
         for i in range(len(nodes) - 1):
@@ -2133,11 +2138,11 @@ class FileBrowser(tk.Toplevel):
             x2, y2 = canvas.coords(nodes[i + 1])[0] + node_radius, canvas.coords(nodes[i + 1])[1] + node_radius
             canvas.create_line(x1, y1, x2, y2, tags=("line", f"line{i}"))
 
-        # canvas와 scrollbar 연결
-        canvas.config(scrollregion=canvas.bbox("all"))
-        canvas.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        def update_scrollregion(event):
+            canvas.configure(scrollregion=canvas.bbox("all"))
 
-        # 마우스 휠 이벤트 처리
+        canvas.bind("<Configure>", update_scrollregion)
+        canvas.config(scrollregion=canvas.bbox("all"))
         canvas.bind("<MouseWheel>", lambda e: canvas.yview_scroll(int(-1 * (e.delta / 120)), "units"))
 
         # 노드에 대한 선 숨기기
@@ -2145,6 +2150,7 @@ class FileBrowser(tk.Toplevel):
             canvas.tag_lower(f"line{i}", "node")
 
         new_window.mainloop()
+
 
 
     def clear_entry(self, event):
