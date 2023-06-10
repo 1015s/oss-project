@@ -2119,12 +2119,13 @@ class FileBrowser(tk.Toplevel):
 
         # 노드 그리기
         node_radius = 10
+        text_offset = 20  # 텍스트의 오른쪽으로의 오프셋
         node_positions = [(50, 50 + i * 50) for i in range(len(commit_history))]
         nodes = []
         for position, commit in zip(node_positions, commit_history):
             node = canvas.create_oval(position[0] - node_radius, position[1] - node_radius, position[0] + node_radius, position[1] + node_radius, fill="red", tags="node")
             nodes.append(node)
-            canvas.create_text(position[0] + node_radius + 10, position[1], text=commit['hash'])
+            canvas.create_text(position[0] + node_radius + text_offset, position[1], anchor=tk.W, text=f"{commit['author']}: {commit['message']}")
 
         # 선 그리기
         for i in range(len(nodes) - 1):
