@@ -4,7 +4,7 @@ from tkinter import ttk
 import os
 from tkinter import messagebox
 from tkinter import simpledialog
-from filebrowser import * 
+#from filebrowser import * 
 
 pathh=""
 

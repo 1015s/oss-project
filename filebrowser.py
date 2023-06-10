@@ -87,7 +87,7 @@ class FileBrowser(tk.Toplevel):
         
     def __init__(self, parent, initialdir="", initialfile="", mode="openfile",
                  multiple_selection=False, defaultext="", title="Filebrowser",
-                 filetypes=[], okbuttontext=None, cancelbuttontext=_("Cancel"),commitbuttontext=("Commit은 마우스휠클릭"),
+                 filetypes=[], okbuttontext=None, cancelbuttontext=_("Cancel"),commitbuttontext=("Commit은 폴더에 대고 마우스휠클릭\nBranch와 Clone버튼은 폴더를 열고 누르세요"),
                  foldercreation=True, **kw):
         """
         Create a filebrowser dialog.
@@ -486,9 +486,11 @@ class FileBrowser(tk.Toplevel):
                    command=self.validate).pack(side="right")
         ttk.Button(frame_buttons, text=cancelbuttontext,
                    command=self.quit).pack(side="right", padx=4)
-        ttk.Label(frame_buttons,text=commitbuttontext).pack(side="right",padx=8)
-        ttk.Button(frame_buttons, text="브랜치버튼",
-                   command=self.branch_button_click).pack(side="right", padx=16)
+        ttk.Label(frame_buttons,text=commitbuttontext).pack(side="left",padx=2)
+        ttk.Button(frame_buttons, text="Branch",
+                   command=self.branch_button_click).pack(side="right", padx=5)
+        ttk.Button(frame_buttons, text="Clone",
+                   command=self.clone_button_click).pack(side="right", padx=9)
         # --- 메뉴 생성
         self.foldermenu = tk.Menu(self, tearoff=0)
         self.filemenu_untracked = tk.Menu(self, tearoff=0)
@@ -583,7 +585,7 @@ class FileBrowser(tk.Toplevel):
         if mode == 'save':
             self.entry.selection_range(0, 'end')
             self.entry.focus_set() 
-            
+          
     def branch_button_click(self):
         global glo_path
         glo_path=path_button.global_path
@@ -598,7 +600,6 @@ class FileBrowser(tk.Toplevel):
                 branch_menu=BranchMenu(root)
                 branch_menu.connect_other_py(glo_path)
                 root.mainloop()  # Tkinter 이벤트 루프 시작
-                
                 
             else: #gitrepo가 아닌경우
                 FileBrowser.error_message_window()
@@ -1972,7 +1973,55 @@ class FileBrowser(tk.Toplevel):
             messagebox.showinfo("Git Clone Status", f"Clone failed with error: {e}")
             return False
 
-        
+    def clone_button_click(self):
+        global glo_path
+        glo_path=path_button.global_path
+        destination_path=glo_path
+        print("branch_button_click 함수 진입")
+        print("glo_path: "+glo_path)
+        if glo_path: #경로가 있다면
+            if self.check_git_managed(glo_path)==True:
+                FileBrowser.error_message_window() #이미 git repo면 안되얌
+            else: #gitrepo가 아닌경우
+                response = messagebox.askquestion("Question", "Is remote repository Private?")
+                if response == 'yes':
+                    print("User chose A")
+                    self.choose_private(destination_path)
+                elif response == 'no':
+                    print("User chose B")
+                    self.choose_public(destination_path)
+        else:#경로가 없는경우
+            FileBrowser.error_message_window()
+        '''
+        root = tk.Tk()
+
+        label = tk.Label(root, text="Choose Public or Private")
+        label.pack(side="top")
+        button_a = tk.Button(root, text="Public", command=self.choose_public(destination_path))
+        button_a.pack(side="left")
+        button_b = tk.Button(root, text="Private", command=self.choose_private(destination_path))
+        button_b.pack(side="right")
+        root.mainloop()
+        '''
+    def choose_public(self,destination_path):
+        print("public")
+        url = simpledialog.askstring("url", "Enter github url")
+        if url:
+            self.git_clone_public(url,destination_path)
+        else:
+            messagebox.showwarning("알림", "주소 입력안함")
+    def choose_private(self,destination_path):
+        print("private")
+        url = simpledialog.askstring("url", "Enter github url")
+        if url:
+            access_token=simpledialog.askstring("access token", "Enter access token")
+            if access_token:
+                self.git_clone_public(url,destination_path,access_token)
+            else:
+                messagebox.showwarning("알림", "토큰입력안함")
+        else:
+            messagebox.showwarning("알림", "주소입력안함")
+          
     #우클릭시
 
     def _select_rightmouse(self, event):    
