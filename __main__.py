@@ -29,7 +29,7 @@ try:
     from tkinter import filedialog
 except ImportError:
     import tk
-    import ttk
+    #import ttk
     from tkinter import filedialog as filedialog
 
 

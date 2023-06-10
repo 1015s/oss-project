@@ -45,9 +45,11 @@ from constants import unquote, tk, ttk, key_sort_files, \
     get_modification_date, display_modification_date, display_size
 from autoscrollbar import AutoScrollbar
 from path_button import PathButton
+import path_button
 from tooltip import TooltipTreeWrapper
 from recent_files import RecentFiles
 from stagelist import *
+from branch_menu import *
 from tkinter import filedialog
 import tkinter as tk
 if OSNAME == 'nt':
@@ -487,6 +489,8 @@ class FileBrowser(tk.Toplevel):
         ttk.Button(frame_buttons, text=cancelbuttontext,
                    command=self.quit).pack(side="right", padx=4)
         ttk.Label(frame_buttons,text=commitbuttontext).pack(side="right",padx=8)
+        ttk.Button(frame_buttons, text="브랜치버튼",
+                   command=self.branch_button_click).pack(side="right", padx=16)
         # --- 메뉴 생성
         self.foldermenu = tk.Menu(self, tearoff=0)
         self.filemenu_untracked = tk.Menu(self, tearoff=0)
@@ -581,6 +585,27 @@ class FileBrowser(tk.Toplevel):
         if mode == 'save':
             self.entry.selection_range(0, 'end')
             self.entry.focus_set() 
+            
+    def branch_button_click(self):
+        global glo_path
+        glo_path=path_button.global_path
+        print("branch_button_click 함수 진입")
+        print("glo_path: "+glo_path)
+        
+        if glo_path: #경로가 있다면
+            if self.check_git_managed(glo_path)==True: # 오류발생 and self.is_git_top_level(element)==True:#gitrepo가 맞는경우
+                #branch_menu.py를 실행시키기위한 인스턴스 만들기
+                
+                root=tk.Tk()
+                branch_menu=BranchMenu(root)
+                branch_menu.connect_other_py(glo_path)
+                root.mainloop()  # Tkinter 이벤트 루프 시작
+                
+                
+            else: #gitrepo가 아닌경우
+                FileBrowser.error_message_window()
+        else:#경로가 없는경우
+            FileBrowser.error_message_window()
     #yuna 마우스휠클릭시 그 파일의 경로를 알아내고 stagelist.py실행하게 하는 함수
     def _select_special_mouse(self,event):
         x,y=event.x,event.y

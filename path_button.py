@@ -23,7 +23,7 @@ Path bar button class
 
 from constants import add_trace, remove_trace, ttk
 
-
+global_path=""
 class PathButton(ttk.Button):
     """Toggle button class to make the path bar."""
 
@@ -67,9 +67,15 @@ class PathButton(ttk.Button):
 
     def var_change(self, *args):
         """Change the state of the button when the control variable changes."""
+        global global_path
         self.master.update()
         self.master.update_idletasks()
         if self.variable.get() == self.value:
             self.state(("selected",))
         else:
             self.state(("!selected",))
+        for button in self.master.winfo_children():
+            if isinstance(button,PathButton):
+                self.path=button.get_value()
+        global_path=self.path
+        print("global_path이다: "+global_path)
