@@ -147,16 +147,16 @@ Click the start button on the Welcome page
 **Git clone from Private Github repository**
 1. Open the top-level folder NOT associated with the git repository
 2. Click "Clone" button
-3. You will be able to see confirmation message window which ask if it's private or not.<br>Click Y button
+3. You will be able to see confirmation message window which asks if it's private or not.<br>Click Y button
 4. Enter github repository's url to clone
-5. Enter github repository's token  
+5. Enter github repository's access token  
 
 <br>
 
 **Git clone from Public Github repository**
 1. Open the top-level folder NOT associated with the git repository
 2. Click "Clone" button
-3. You will be able to see confirmation message window which ask if it's private or not.<br>Click N button  
+3. You will be able to see confirmation message window which asks if it's private or not.<br>Click N button  
 4. Enter github repository's url to clone
 
 
