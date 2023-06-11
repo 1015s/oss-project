@@ -91,6 +91,7 @@ repo_label = tk.Label(root, text="GUI git repository", font=("Helvetica", 20,"bo
 repo_label.place(relx=0.5, rely=0.35, anchor="center")
 
 open_button = ttk.Button(root, text="start", command=c_open_file)
-open_button.place(relx=0.5, rely=0.8, anchor="center")
-
+open_button.place(relx=0.5, rely=0.65, anchor="center")
+close_button = ttk.Button(root, text="end", command=root.destroy)
+close_button.place(relx=0.5, rely=0.85, anchor="center")
 root.mainloop()
