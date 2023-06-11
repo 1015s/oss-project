@@ -78,4 +78,4 @@ class PathButton(ttk.Button):
             if isinstance(button,PathButton):
                 self.path=button.get_value()
         global_path=self.path
-        print("global_path이다: "+global_path)
+        
