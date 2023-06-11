@@ -13,7 +13,15 @@ Git has been made easy to use through the GUI.
 ```
 
 <br>
+## List of Features
+- File Browser
+- Git repository creation
+- Version Controlling
+- Show file's status
+- Branch management
+- Git clone from GitHub
 
+<br>
 ## Requirements
 - Windows11
 - python 3.x
