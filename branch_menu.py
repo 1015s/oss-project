@@ -14,7 +14,7 @@ class BranchMenu:
         self.toplevel = self.parent
         self.toplevel.title("Branch Menu")
         self.toplevel.geometry("300x200")
-
+        
         # 브랜치 생성 버튼
         self.create_button = ttk.Button(self.toplevel, text="Create Branch", command=self.creating_branch)
         self.create_button.pack(padx=10, pady=5)
@@ -34,7 +34,8 @@ class BranchMenu:
         # 브랜치 병합 버튼
         self.merge_button = ttk.Button(self.toplevel, text="Merge Branch", command=self.merging_branch)
         self.merge_button.pack(padx=10, pady=5)
-        
+    
+
     def connect_other_py(self,element):
         global pathh
         print("connect_other_py: "+element)
@@ -72,10 +73,12 @@ class BranchMenu:
                 if response == 'yes':
                     print("User chose yes")
                     self.branch_delete(path,selected_branch)
-                    window.withdraw()
+                    window.destroy()
+                    root.destroy()
                 elif response == 'no':
                     print("User chose no")
-                    window.withdraw()            
+                    window.destroy()
+                    root.destroy()            
             #print(selected_branch)
         # 새 창 생성
         window = tk.Toplevel(root)
@@ -110,12 +113,15 @@ class BranchMenu:
                     branch_new_name = simpledialog.askstring("Rename", "Rename branch name")
                     if branch_new_name:
                         self.branch_rename(path,selected_branch,branch_new_name)
-                        window.withdraw()
+                        window.destroy()
+                        root.destroy()
                     else:
-                        window.withdraw()
+                        window.destroy()
+                        root.destroy()
                 elif response == 'no':
                     print("User chose no")
-                    window.withdraw()            
+                    window.destroy()
+                    root.destroy()            
             #print(selected_branch)
         # 새 창 생성
         window = tk.Toplevel(root)
@@ -148,10 +154,12 @@ class BranchMenu:
                 if response == 'yes':
                     print("User chose yes")
                     self.branch_checkout(path,selected_branch)
-                    window.withdraw()
+                    window.destroy()
+                    root.destroy()
                 elif response == 'no':
                     print("User chose no")
-                    window.withdraw()            
+                    window.destroy()
+                    root.destroy()            
             #print(selected_branch)
         # 새 창 생성
         window = tk.Toplevel(root)
@@ -183,10 +191,12 @@ class BranchMenu:
                 if response == 'yes':
                     print("User chose yes")
                     self.merge_branch(path,selected_branch)
-                    window.withdraw()
+                    window.destroy()
+                    root.destroy()
                 elif response == 'no':
                     print("User chose no")
-                    window.withdraw()            
+                    window.destroy()
+                    root.destroy()            
             #print(selected_branch)
         # 새 창 생성
         window = tk.Toplevel(root)
