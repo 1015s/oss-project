@@ -13,8 +13,8 @@ class BranchMenu:
         self.parent = parent
         self.toplevel = self.parent
         self.toplevel.title("Branch Menu")
-        self.toplevel.geometry("300x200")
-
+        self.toplevel.geometry("300x210")
+        
         # 브랜치 생성 버튼
         self.create_button = ttk.Button(self.toplevel, text="Create Branch", command=self.creating_branch)
         self.create_button.pack(padx=10, pady=5)
@@ -34,10 +34,15 @@ class BranchMenu:
         # 브랜치 병합 버튼
         self.merge_button = ttk.Button(self.toplevel, text="Merge Branch", command=self.merging_branch)
         self.merge_button.pack(padx=10, pady=5)
+    
+        
+        # 현재브랜치 확인 버튼
+        self.current_button = ttk.Button(self.toplevel, text="Current branch", command=self.currenting_branch)
+        self.current_button.pack(padx=10, pady=5)
+        
         
     def connect_other_py(self,element):
         global pathh
-        print("connect_other_py: "+element)
         pathh=element
         
     def creating_branch(self):
@@ -66,21 +71,20 @@ class BranchMenu:
             if selected_indices:
                 last_selected_index = max(selected_indices)
                 selected_branch = listbox.get(last_selected_index)
-                print(selected_branch)
-            #selected_branch = listbox.get(listbox.curselection())
+            
                 response = messagebox.askquestion("Question", "이 브랜치를 삭제하시겠습니까?")
                 if response == 'yes':
-                    print("User chose yes")
                     self.branch_delete(path,selected_branch)
-                    window.withdraw()
+                    window.destroy()
+                    root.destroy()
                 elif response == 'no':
-                    print("User chose no")
-                    window.withdraw()            
-            #print(selected_branch)
+                    window.destroy()
+                    root.destroy()            
+            
         # 새 창 생성
         window = tk.Toplevel(root)
         root.withdraw()
-        #window.protocol("WM_DELETE_WINDOW", self.close_window)
+        
         # 목록 위젯 생성
         listbox = tk.Listbox(window)
         listbox.pack()
@@ -89,7 +93,7 @@ class BranchMenu:
             listbox.insert(tk.END, branch)
         # 브랜치 선택 이벤트 핸들러 연결
         listbox.bind('<<ListboxSelect>>', select_branch)
-        print("브랜치 삭제")
+        
 
     def renaming_branch(self):
         #branch_rename이용
@@ -102,21 +106,24 @@ class BranchMenu:
             if selected_indices:
                 last_selected_index = max(selected_indices)
                 selected_branch = listbox.get(last_selected_index)
-                print(selected_branch)
+                
                 #selected_branch = listbox.get(listbox.curselection())
                 response = messagebox.askquestion("Question", "이 브랜치의 이름을 바꾸겠습니까?")
                 if response == 'yes':
-                    print("User chose yes")
+                    
                     branch_new_name = simpledialog.askstring("Rename", "Rename branch name")
                     if branch_new_name:
                         self.branch_rename(path,selected_branch,branch_new_name)
-                        window.withdraw()
+                        window.destroy()
+                        root.destroy()
                     else:
-                        window.withdraw()
+                        window.destroy()
+                        root.destroy()
                 elif response == 'no':
-                    print("User chose no")
-                    window.withdraw()            
-            #print(selected_branch)
+                    
+                    window.destroy()
+                    root.destroy()            
+            
         # 새 창 생성
         window = tk.Toplevel(root)
         root.withdraw()
@@ -129,8 +136,8 @@ class BranchMenu:
             listbox.insert(tk.END, branch)
         # 브랜치 선택 이벤트 핸들러 연결
         listbox.bind('<<ListboxSelect>>', select_branch)
-        print("브랜치 이름변경")
-        #중요
+        
+        
         
     def checkouting_branch(self):
         global pathh
@@ -142,17 +149,19 @@ class BranchMenu:
             if selected_indices:
                 last_selected_index = max(selected_indices)
                 selected_branch = listbox.get(last_selected_index)
-                print(selected_branch)
+                
             #selected_branch = listbox.get(listbox.curselection())
                 response = messagebox.askquestion("Question", "이 브랜치로 바꾸겠습니까?")
                 if response == 'yes':
-                    print("User chose yes")
+                    
                     self.branch_checkout(path,selected_branch)
-                    window.withdraw()
+                    window.destroy()
+                    root.destroy()
                 elif response == 'no':
-                    print("User chose no")
-                    window.withdraw()            
-            #print(selected_branch)
+                    
+                    window.destroy()
+                    root.destroy()            
+            
         # 새 창 생성
         window = tk.Toplevel(root)
         root.withdraw()
@@ -164,8 +173,6 @@ class BranchMenu:
             listbox.insert(tk.END, branch)
         # 브랜치 선택 이벤트 핸들러 연결
         listbox.bind('<<ListboxSelect>>', select_branch)
-
-        
 
     def merging_branch(self):
         global pathh
@@ -177,17 +184,19 @@ class BranchMenu:
             if selected_indices:
                 last_selected_index = max(selected_indices)
                 selected_branch = listbox.get(last_selected_index)
-                print(selected_branch)
+                
             #selected_branch = listbox.get(listbox.curselection())
                 response = messagebox.askquestion("Question", "이 브랜치와 병합 하시겠습니까?")
                 if response == 'yes':
-                    print("User chose yes")
+                    
                     self.merge_branch(path,selected_branch)
-                    window.withdraw()
+                    window.destroy()
+                    root.destroy()
                 elif response == 'no':
-                    print("User chose no")
-                    window.withdraw()            
-            #print(selected_branch)
+                    
+                    window.destroy()
+                    root.destroy()            
+            
         # 새 창 생성
         window = tk.Toplevel(root)
         root.withdraw()
@@ -199,9 +208,7 @@ class BranchMenu:
             listbox.insert(tk.END, branch)
         # 브랜치 선택 이벤트 핸들러 연결
         listbox.bind('<<ListboxSelect>>', select_branch)
-        print("브랜치 병합")
-
-
+        
 
     def check_git_managed(self, path):
         git_dir = os.path.join(path, ".git")
@@ -209,13 +216,20 @@ class BranchMenu:
             return True
         return False
 
+    def currenting_branch(self):
+        global pathh
+        path = pathh
+        current_branch = self.current_branch(path)
+        textt=current_branch
+        messagebox.showinfo("Current branch", textt)
+
     def current_branch(self, folder_path):
         if not self.check_git_managed(folder_path):
             return None
         else:
             cmd = ["git", "branch", "--show-current"]
+            #result = subprocess.run(cmd, cwd=folder_path, capture_output=True, text=True)
             result = subprocess.run(cmd, cwd=folder_path, capture_output=True, text=True,encoding='utf-8')
-            
             branch_name = result.stdout.strip()
             return branch_name
     
