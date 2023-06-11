@@ -149,8 +149,14 @@ Click the start button on the Welcome page
 1. Click "Current Branch" button in Branch Menu window
 2. You will be able to see current branch in message window  
 
+<br>
+
+### Git commit history
 
 
+1. Open the top-level folder associated with the git repository
+2. Press the commit history button on the upper right
+3. Click on the commit node if you want to see detailed information
 <br>
 
 ### Git clone from GitHub
