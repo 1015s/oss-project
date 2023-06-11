@@ -88,37 +88,50 @@ Click the start button on the Welcome page
 <br>
 
 ### Branch management
+
 1. Open the top-level folder associated with the git repository
 2. Click "Branch" button
 3. You will be able to see new window named "Branch Menu"
+
 <br>
+
 **Create Branch**
 1. Click "Create Branch" button in Branch Menu window
 2. Enter new branch name
 3. Click the OK button  
+
 <br>
+
 **Delete Branch**
 1. Click "Delete Branch" button in Branch Menu window
 2. You will be able to see a list of branches except for the current branch. <br>Click the branch you want to delete
 3. When the confirmation message window appears, click the Y button  
+
 <br>
+
 **Rename Branch**
 1. Click "Rename Branch" button in Branch Menu window
 2. You will be able to see a list of branches. <br>Click the branch you want to rename
 3. When the confirmation message window appears, click the Y button
 4. Enter new name
 5. Click the OK button 
+
 <br>
+
 **Checkout Branch**
 1. Click "Checkout Branch" button in Branch Menu window
 2. You will be able to see a list of branches except for the current branch. <br>Click the branch you want to checkout
 3. When the confirmation message window appears, click the Y button  
+
 <br>
+
 **Merge Branch**
 1. Click "Merge Branch" button in Branch Menu window
 2. You will be able to see a list of branches except for the current branch. <br>Click the branch you want to merge with current branch
 3. When the confirmation message window appears, click the Y button  
+
 <br>
+
 **Checking current Branch**
 1. Click "Current Branch" button in Branch Menu window
 2. You will be able to see current branch in message window  
@@ -126,20 +139,27 @@ Click the start button on the Welcome page
 
 
 <br>
+
 ### Git clone from GitHub
+
 <br>
+
 **Git clone from Private Github repository**
 1. Open the top-level folder NOT associated with the git repository
 2. Click "Clone" button
 3. You will be able to see confirmation message window which ask if it's private or not.<br>Click Y button
 4. Enter github repository's url to clone
 5. Enter github repository's token  
+
 <br>
+
 **Git clone from Public Github repository**
 1. Open the top-level folder NOT associated with the git repository
 2. Click "Clone" button
 3. You will be able to see confirmation message window which ask if it's private or not.<br>Click N button  
 4. Enter github repository's url to clone
+
+
 <br>
 
 
