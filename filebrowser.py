@@ -298,10 +298,12 @@ class FileBrowser(tk.Toplevel):
         self.path_bar = ttk.Frame(frame_bar)
         self.path_bar.grid(row=0, column=0, sticky="ew")
         self.path_bar_buttons = []
-        self.b_new_folder = ttk.Button(frame_bar, image=self.im_new,
-                                       command=self.create_folder)
+        #self.b_new_folder = ttk.Button(frame_bar, image=self.im_new,command=self.create_folder)
+        self.b_commit_history = ttk.Button(frame_bar, text="Commit History", command=self.open_commit_history)
+        #self.b_commit_history.grid(row=0, column=1, sticky="e")
         if self.foldercreation:
-            self.b_new_folder.grid(row=0, column=1, sticky="e")
+            #self.b_new_folder.grid(row=0, column=1, sticky="e")
+            self.b_commit_history.grid(row=0, column=1, sticky="e")
         if mode == "save":
             ttk.Label(self.path_bar, text=_("Folder: ")).grid(row=0, column=0)
             self.defaultext = defaultext
@@ -823,8 +825,8 @@ class FileBrowser(tk.Toplevel):
         self.right_tree.column("location", stretch=False, width=100)
         self.right_tree.column("size", stretch=False, width=85)
         self.right_tree.column("date", width=120)
-        if self.foldercreation:
-            self.b_new_folder.grid_remove()
+        #if self.foldercreation:
+        #    self.b_new_folder.grid_remove()
         extension = self.filetypes[self.filetype.get()]
         files = self._recent_files.get()
         self.right_tree.delete(*self.right_tree.get_children(""))
@@ -1109,8 +1111,8 @@ class FileBrowser(tk.Toplevel):
             self.right_tree.column("#0", width=w)
             self.right_tree.column("size", stretch=False, width=85)
             self.right_tree.column("date", width=120)
-            if self.foldercreation:
-                self.b_new_folder.grid()
+            #if self.foldercreation:
+            #    self.b_new_folder.grid()
         # reset history
         if reset:
             if not self._hist_index == -1:
@@ -1124,9 +1126,11 @@ class FileBrowser(tk.Toplevel):
         # disable new folder creation if no write access
         if self.foldercreation:
             if access(folder, W_OK):
-                self.b_new_folder.state(('!disabled',))
+                #self.b_new_folder.state(('!disabled',))
+                pass
             else:
-                self.b_new_folder.state(('disabled',))
+                #self.b_new_folder.state(('disabled',))
+                pass
         # clear self.right_tree
         self.right_tree.delete(*self.right_tree.get_children(""))
         self.right_tree.delete(*self.hidden)
@@ -1202,8 +1206,8 @@ class FileBrowser(tk.Toplevel):
             self.right_tree.column("#0", width=w)
             self.right_tree.column("size", stretch=False, width=85)
             self.right_tree.column("date", width=120)
-            if self.foldercreation:
-                self.b_new_folder.grid()
+            #if self.foldercreation:
+            #    self.b_new_folder.grid()
         # reset history
         if reset:
             if not self._hist_index == -1:
@@ -1217,9 +1221,11 @@ class FileBrowser(tk.Toplevel):
         # disable new folder creation if no write access
         if self.foldercreation:
             if access(folder, W_OK):
-                self.b_new_folder.state(('!disabled',))
+                #self.b_new_folder.state(('!disabled',))
+                pass
             else:
-                self.b_new_folder.state(('disabled',))
+                #self.b_new_folder.state(('disabled',))
+                pass
         # clear self.right_tree
         self.right_tree.delete(*self.right_tree.get_children(""))
         self.right_tree.delete(*self.hidden)
@@ -1305,8 +1311,8 @@ class FileBrowser(tk.Toplevel):
             self.right_tree.column("#0", width=w)
             self.right_tree.column("size", stretch=False, width=85)
             self.right_tree.column("date", width=120)
-            if self.foldercreation:
-                self.b_new_folder.grid()
+            #if self.foldercreation:
+            #    self.b_new_folder.grid()
         # reset history
         if reset:
             if not self._hist_index == -1:
@@ -1320,9 +1326,11 @@ class FileBrowser(tk.Toplevel):
         # disable new folder creation if no write access
         if self.foldercreation:
             if access(folder, W_OK):
-                self.b_new_folder.state(('!disabled',))
+                #self.b_new_folder.state(('!disabled',))
+                pass
             else:
-                self.b_new_folder.state(('disabled',))
+                #self.b_new_folder.state(('disabled',))
+                pass
         # clear self.right_tree
         self.right_tree.delete(*self.right_tree.get_children(""))
         self.right_tree.delete(*self.hidden)
@@ -1893,16 +1901,22 @@ class FileBrowser(tk.Toplevel):
     # input - folder_path, output - 현재 branchdml commit history - hash, 작성자 이름, 메시지 dic 타입의 list로 만들어서 반환
     def git_commit_history(self, folder_path):
         # 해당 폴더가 git repository에 연결되어 있는지 확인
+        
         if not self.check_git_managed(folder_path):
             messagebox.showinfo("Folder Status", f"{folder_path} is not a git repository")
             return None
+        
 
         # 현재 브랜치 이름 가져오기
         current_branch = subprocess.check_output(["git", "branch", "--show-current"], cwd=folder_path, text=True).strip()
+        #print(current_branch)
+        #print(folder_path)
+        
 
         # 현재 브랜치의 workflow 커밋 히스토리 가져오기
         cmd = ["git", "log", "--oneline", "--graph", "--branches", "--decorate", "--pretty=format:%h, %an, %s", current_branch]
         result = subprocess.check_output(cmd, cwd=folder_path, text=True, encoding='utf-8')
+        
 
         # 개행 문자로 분리하여 각 커밋의 작성자 이름과 메시지를 추출하여 리스트로 반환
         commit_history = []
@@ -1911,6 +1925,7 @@ class FileBrowser(tk.Toplevel):
                 if line.startswith('* '):
                     line = line[2:]  # "*" 제거
                 commit_hash, rest = line.split(',', 1)
+                commit_hash = commit_hash.strip().split(' ')[-1]  # 커밋 해시에서 불필요한 문자 제거
                 author_name, message = rest.lstrip().split(',', 1)
                 message = message.strip()
                 
@@ -1919,9 +1934,11 @@ class FileBrowser(tk.Toplevel):
                     'author': author_name,
                     'message': message
                 })
-                return commit_history
+                
             except (UnicodeDecodeError, ValueError):
                 continue
+        return commit_history
+            
     
     # input - foler_path, commit_object_hash -> output : dict 타입으로 commit_hash, author_name, commit_date(ISO 8601 형식), commit_message 반환
     def commit_object_detail(self, folder_path, commit_hash):
@@ -2147,10 +2164,88 @@ class FileBrowser(tk.Toplevel):
                 self.git_restore_staged(path, folder_path)
 
 
+    ###commit history 창 생성###
+
+    def open_commit_history(self):
+        # Commit History 가져오기
+        path_strings = [button['text'] for button in self.path_bar_buttons]
+        path_list = []
+        for path in path_strings:
+            # 첫번째 항목의 마지막 글자를 삭제
+            if path == path_strings[0]:
+                path = path[:-1]
+            path_list.append(path)
+        path = "\\".join(path_list)
+        commit_history = self.git_commit_history(path)
+        if commit_history is None:
+            return
+
+        def show_status(commit, mylist):
+            status_window = tk.Toplevel(self)
+            status_window.geometry("400x100")
+            status_text = f"commit_hash: {mylist['commit_hash']}\n"
+            status_text += f"author_name: {mylist['author_name']}\n"
+            status_text += f"commit_date: {mylist['commit_date']}\n"
+            status_text += f"commit_message: {mylist['commit_message']}"
+            status_label = tk.Label(status_window, text=status_text)
+            status_label.pack()
+
+        def node_clicked(event, commit):
+            mylist = self.commit_object_detail(path, commit['hash'])
+            print(mylist)
+            show_status(commit, mylist)
+
+        new_window = tk.Toplevel(self)  # 새로운 창 생성
+        new_window.geometry("400x500")
+
+        canvas = tk.Canvas(new_window)
+        scrollbar_y = tk.Scrollbar(new_window, command=canvas.yview)
+        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+        canvas.configure(yscrollcommand=scrollbar_y.set)
+
+        scrollbar_x = tk.Scrollbar(new_window, command=canvas.xview, orient=tk.HORIZONTAL)
+        scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X)
+        canvas.configure(xscrollcommand=scrollbar_x.set)
+
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # 노드 그리기
+        node_radius = 10
+        text_offset = 20  # 텍스트의 오른쪽으로의 오프셋
+        node_positions = [(50, 50 + i * 50) for i in range(len(commit_history))]
+        nodes = []
+        for position, commit in zip(node_positions, commit_history):
+            node = canvas.create_oval(position[0] - node_radius, position[1] - node_radius, position[0] + node_radius,
+                                    position[1] + node_radius, fill="red", tags="node")
+            nodes.append(node)
+            canvas.create_text(position[0] + node_radius + text_offset, position[1], anchor=tk.W,
+                            text=f"{commit['author']}: {commit['message']}")
+            canvas.tag_bind(node, "<Button-1>", lambda event, commit=commit: node_clicked(event, commit))
+
+        # 선 그리기
+        for i in range(len(nodes) - 1):
+            x1, y1 = canvas.coords(nodes[i])[0] + node_radius, canvas.coords(nodes[i])[1] + node_radius
+            x2, y2 = canvas.coords(nodes[i + 1])[0] + node_radius, canvas.coords(nodes[i + 1])[1] + node_radius
+            canvas.create_line(x1, y1, x2, y2, tags=("line", f"line{i}"))
+
+        def update_scrollregion(event):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+
+        canvas.bind("<Configure>", update_scrollregion)
+        canvas.config(scrollregion=canvas.bbox("all"))
+        canvas.bind("<MouseWheel>", lambda e: canvas.yview_scroll(int(-1 * (e.delta / 120)), "units"))
+
+        # 노드에 대한 선 숨기기
+        for i in range(len(nodes) - 1):
+            canvas.tag_lower(f"line{i}", "node")
+
+        new_window.mainloop()
+
+
     def clear_entry(self, event):
         pass
     
     def show_entry(self, event):
         pass
 
-        
+    

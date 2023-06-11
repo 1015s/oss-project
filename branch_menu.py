@@ -13,7 +13,9 @@ class BranchMenu:
         self.parent = parent
         self.toplevel = self.parent
         self.toplevel.title("Branch Menu")
+
         self.toplevel.geometry("300x210")
+
         
         # 브랜치 생성 버튼
         self.create_button = ttk.Button(self.toplevel, text="Create Branch", command=self.creating_branch)
@@ -35,12 +37,14 @@ class BranchMenu:
         self.merge_button = ttk.Button(self.toplevel, text="Merge Branch", command=self.merging_branch)
         self.merge_button.pack(padx=10, pady=5)
     
+
         
         # 현재브랜치 확인 버튼
         self.current_button = ttk.Button(self.toplevel, text="Current branch", command=self.currenting_branch)
         self.current_button.pack(padx=10, pady=5)
         
         
+
     def connect_other_py(self,element):
         global pathh
         pathh=element
@@ -78,9 +82,11 @@ class BranchMenu:
                     window.destroy()
                     root.destroy()
                 elif response == 'no':
+
                     window.destroy()
                     root.destroy()            
             
+
         # 새 창 생성
         window = tk.Toplevel(root)
         root.withdraw()
@@ -120,10 +126,12 @@ class BranchMenu:
                         window.destroy()
                         root.destroy()
                 elif response == 'no':
+
                     
                     window.destroy()
                     root.destroy()            
             
+
         # 새 창 생성
         window = tk.Toplevel(root)
         root.withdraw()
@@ -158,10 +166,12 @@ class BranchMenu:
                     window.destroy()
                     root.destroy()
                 elif response == 'no':
+
                     
                     window.destroy()
                     root.destroy()            
             
+
         # 새 창 생성
         window = tk.Toplevel(root)
         root.withdraw()
@@ -193,10 +203,12 @@ class BranchMenu:
                     window.destroy()
                     root.destroy()
                 elif response == 'no':
+
                     
                     window.destroy()
                     root.destroy()            
             
+
         # 새 창 생성
         window = tk.Toplevel(root)
         root.withdraw()
