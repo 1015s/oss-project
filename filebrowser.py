@@ -89,6 +89,7 @@ class FileBrowser(tk.Toplevel):
                  multiple_selection=False, defaultext="", title="Filebrowser",
                  filetypes=[], okbuttontext=None, cancelbuttontext=_("Cancel"),commitbuttontext=("Commit은 폴더에 대고 마우스휠클릭\nBranch와 Clone버튼은 폴더를 열고 누르세요"),
                  foldercreation=True, **kw):
+     
         """
         Create a filebrowser dialog.
 
@@ -491,6 +492,7 @@ class FileBrowser(tk.Toplevel):
                    command=self.branch_button_click).pack(side="right", padx=5)
         ttk.Button(frame_buttons, text="Clone",
                    command=self.clone_button_click).pack(side="right", padx=9)
+    
         # --- 메뉴 생성
         self.foldermenu = tk.Menu(self, tearoff=0)
         self.filemenu_untracked = tk.Menu(self, tearoff=0)
@@ -589,8 +591,7 @@ class FileBrowser(tk.Toplevel):
     def branch_button_click(self):
         global glo_path
         glo_path=path_button.global_path
-        print("branch_button_click 함수 진입")
-        print("glo_path: "+glo_path)
+        
         
         if glo_path: #경로가 있다면
             if self.check_git_managed(glo_path)==True: # 오류발생 and self.is_git_top_level(element)==True:#gitrepo가 맞는경우
@@ -1978,18 +1979,17 @@ class FileBrowser(tk.Toplevel):
         global glo_path
         glo_path=path_button.global_path
         destination_path=glo_path
-        print("branch_button_click 함수 진입")
-        print("glo_path: "+glo_path)
+        
         if glo_path: #경로가 있다면
             if self.check_git_managed(glo_path)==True:
                 FileBrowser.error_message_window() #이미 git repo면 안되얌
             else: #gitrepo가 아닌경우
                 response = messagebox.askquestion("Question", "Is remote repository Private?")
                 if response == 'yes':
-                    print("User chose A")
+                    
                     self.choose_private(destination_path)
                 elif response == 'no':
-                    print("User chose B")
+                    
                     self.choose_public(destination_path)
         else:#경로가 없는경우
             FileBrowser.error_message_window()
@@ -2005,14 +2005,14 @@ class FileBrowser(tk.Toplevel):
         root.mainloop()
         '''
     def choose_public(self,destination_path):
-        print("public")
+        
         url = simpledialog.askstring("url", "Enter github url")
         if url:
             self.git_clone_public(url,destination_path)
         else:
             messagebox.showwarning("알림", "주소 입력안함")
     def choose_private(self,destination_path):
-        print("private")
+        
         url = simpledialog.askstring("url", "Enter github url")
         if url:
             access_token=simpledialog.askstring("access token", "Enter access token")
@@ -2152,5 +2152,4 @@ class FileBrowser(tk.Toplevel):
     
     def show_entry(self, event):
         pass
-
-        
+    
