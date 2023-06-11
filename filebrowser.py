@@ -1871,17 +1871,18 @@ class FileBrowser(tk.Toplevel):
             subprocess.run(cmd_merge, cwd=folder_path)
 
             # merge 중에 발생한 충돌 또는 에러 확인
-            cmd_status = ["git", "status", "-s", "--unmerged"]
-            result = subprocess.check_output(cmd_status, cwd=folder_path, universal_newlines=True)
-            unmerged_paths = [line.split()[1] for line in result.splitlines()]
+            if subprocess.call(["git", "merge", "--no-commit", "--no-ff", branch_name], cwd=folder_path) != 0:
+                cmd_status = ["git", "status", "-s", "--unmerged"]
+                result = subprocess.check_output(cmd_status, cwd=folder_path, universal_newlines=True)
+                unmerged_paths = [line.split()[1] for line in result.splitlines()]
 
-            if unmerged_paths:
-                subprocess.run(["git", "merge", "--abort"], cwd=folder_path)
-                messagebox.showinfo("Git Status", f"Merge aborted due to conflicts or errors.\n\nUnmerged paths: {unmerged_paths}")
-                return False
-            else:
-                messagebox.showinfo("Git Status", "Merge completed successfully.")
-                return True
+                if unmerged_paths:
+                    subprocess.run(["git", "merge", "--abort"], cwd=folder_path)
+                    messagebox.showinfo("Git Status", f"Merge aborted due to conflicts or errors.\n\nUnmerged paths: {unmerged_paths}")
+                    return False
+                else:
+                    messagebox.showinfo("Git Status", "Merge completed successfully.")
+                    return True
 
         except subprocess.CalledProcessError as e:
             messagebox.showinfo("Git Status", f"Merge failed with error: {e}")
