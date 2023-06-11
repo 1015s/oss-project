@@ -1977,13 +1977,17 @@ class FileBrowser(tk.Toplevel):
     
     # private repo : input - clone 할 git repo address, 로컬 path, personal access token -> output : git clone 수행 -> 결과 값에 따른 messagebox
     def git_clone_private(self,repository_url, destination_path, access_token):
+        repo_url=repository_url.replace("https://","")
         try:
-            cmd = ["git", "clone", repository_url, destination_path]
+            cmd = ["git", "clone", "https://"+access_token+"@"+repo_url]
+            subprocess.run(cmd, cwd=destination_path)
+            '''
             env = {
                 "GIT_ASKPASS": "echo",  # 인증 정보 요청 시 터미널 대화식 프롬프트를 사용하지 않도록 설정
                 "GIT_TOKEN": access_token  # 액세스 토큰 설정
             }
-            subprocess.run(cmd, env=env)
+            '''
+            #subprocess.run(cmd, env=env,check=True)
             messagebox.showinfo("Git Clone Status", "Git clone completed successfully.")
             return True
 
