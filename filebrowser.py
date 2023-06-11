@@ -1976,7 +1976,7 @@ class FileBrowser(tk.Toplevel):
             return False
     
     # private repo : input - clone 할 git repo address, 로컬 path, personal access token -> output : git clone 수행 -> 결과 값에 따른 messagebox
-    def git_clone_private(repository_url, destination_path, access_token):
+    def git_clone_private(self,repository_url, destination_path, access_token):
         try:
             cmd = ["git", "clone", repository_url, destination_path]
             env = {
@@ -2034,7 +2034,7 @@ class FileBrowser(tk.Toplevel):
         if url:
             access_token=simpledialog.askstring("access token", "Enter access token")
             if access_token:
-                self.git_clone_public(url,destination_path,access_token)
+                self.git_clone_private(url,destination_path,access_token)
             else:
                 messagebox.showwarning("알림", "토큰입력안함")
         else:
