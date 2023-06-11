@@ -16,23 +16,23 @@ class BranchMenu:
         self.toplevel.geometry("300x200")
 
         # 브랜치 생성 버튼
-        self.create_button = ttk.Button(self.toplevel, text="브랜치 생성", command=self.creating_branch)
+        self.create_button = ttk.Button(self.toplevel, text="Create Branch", command=self.creating_branch)
         self.create_button.pack(padx=10, pady=5)
 
         # 브랜치 삭제 버튼
-        self.delete_button = ttk.Button(self.toplevel, text="브랜치 삭제", command=self.deleting_branch)
+        self.delete_button = ttk.Button(self.toplevel, text="Delete Branch", command=self.deleting_branch)
         self.delete_button.pack(padx=10, pady=5)
 
         # 브랜치 변경 버튼
-        self.rename_button = ttk.Button(self.toplevel, text="브랜치 변경", command=self.renaming_branch)
+        self.rename_button = ttk.Button(self.toplevel, text="Rename Branch", command=self.renaming_branch)
         self.rename_button.pack(padx=10, pady=5)
 
         # 브랜치 체크아웃 버튼
-        self.checkout_button = ttk.Button(self.toplevel, text="브랜치 체크아웃", command=self.checkouting_branch)
+        self.checkout_button = ttk.Button(self.toplevel, text="Checkout Branch", command=self.checkouting_branch)
         self.checkout_button.pack(padx=10, pady=5)
 
         # 브랜치 병합 버튼
-        self.merge_button = ttk.Button(self.toplevel, text="브랜치 병합", command=self.merging_branch)
+        self.merge_button = ttk.Button(self.toplevel, text="Merge Branch", command=self.merging_branch)
         self.merge_button.pack(padx=10, pady=5)
         
             
@@ -42,11 +42,13 @@ class BranchMenu:
         pathh=element
         
     def creating_branch(self):
+        global pathh
+        path=pathh
         branch_name = simpledialog.askstring("Create", "Enter new branch name")
         if branch_name:
             try:
                 cmd = ["git", "branch", branch_name]
-                subprocess.run(cmd, cwd=pathh)
+                subprocess.run(cmd, cwd=path)
                 messagebox.showinfo("Branch Status", f"Branch '{branch_name}' created successfully.")
                 return True
             except Exception as e:
@@ -56,26 +58,70 @@ class BranchMenu:
             messagebox.showwarning("알림", "plz write new branch name")
             
     def deleting_branch(self):
-        # 브랜치 삭제 로직 작성
+
         print("브랜치 삭제")
 
     def renaming_branch(self):
-        # 브랜치 변경 로직 작성
-        print("브랜치 이름변경")
-        
-    def checkouting_branch(self):
-        branches = self.get_other_branches(pathh)
+        #branch_rename이용
+        global pathh
+        path=pathh
+        branches = self.branch_list(path)
         root=tk.Tk()
         def select_branch(event):
-            selected_branch = listbox.get(listbox.curselection())
-            response = messagebox.askquestion("Question", "이 브랜치로 바꾸겠습니까?")
-            if response == 'yes':
-                print("User chose yes")
-                self.branch_checkout(pathh,selected_branch)
-                window.withdraw()
-            elif response == 'no':
-                print("User chose no")
-                window.withdraw()            
+            selected_indices = listbox.curselection()
+            if selected_indices:
+                last_selected_index = max(selected_indices)
+                selected_branch = listbox.get(last_selected_index)
+                print(selected_branch)
+                #selected_branch = listbox.get(listbox.curselection())
+                response = messagebox.askquestion("Question", "이 브랜치의 이름을 바꾸겠습니까?")
+                if response == 'yes':
+                    print("User chose yes")
+                    branch_new_name = simpledialog.askstring("Rename", "Rename branch name")
+                    if branch_new_name:
+                        self.branch_rename(path,selected_branch,branch_new_name)
+                        window.withdraw()
+                    else:
+                        window.withdraw()
+                elif response == 'no':
+                    print("User chose no")
+                    window.withdraw()            
+            #print(selected_branch)
+        # 새 창 생성
+        window = tk.Toplevel(root)
+        root.withdraw()
+        #root.destroy()
+        # 목록 위젯 생성
+        listbox = tk.Listbox(window)
+        listbox.pack()
+        # 브랜치 목록 추가
+        for branch in branches:
+            listbox.insert(tk.END, branch)
+        # 브랜치 선택 이벤트 핸들러 연결
+        listbox.bind('<<ListboxSelect>>', select_branch)
+        print("브랜치 이름변경")
+        #중요
+        
+    def checkouting_branch(self):
+        global pathh
+        path=pathh
+        branches = self.get_other_branches(path)
+        root=tk.Tk()
+        def select_branch(event):
+            selected_indices = listbox.curselection()
+            if selected_indices:
+                last_selected_index = max(selected_indices)
+                selected_branch = listbox.get(last_selected_index)
+                print(selected_branch)
+            #selected_branch = listbox.get(listbox.curselection())
+                response = messagebox.askquestion("Question", "이 브랜치로 바꾸겠습니까?")
+                if response == 'yes':
+                    print("User chose yes")
+                    self.branch_checkout(path,selected_branch)
+                    window.withdraw()
+                elif response == 'no':
+                    print("User chose no")
+                    window.withdraw()            
             #print(selected_branch)
         # 새 창 생성
         window = tk.Toplevel(root)
@@ -95,7 +141,7 @@ class BranchMenu:
         # 브랜치 병합 로직 작성
         print("브랜치 병합")
     
-           
+    '''          
     def showing_branch(self,pathh):
         current_branch = self.current_branch(pathh)
         branches = self.branch_list(pathh)
@@ -119,10 +165,9 @@ class BranchMenu:
 
         # 브랜치 선택 이벤트 핸들러 연결
         listbox.bind('<<ListboxSelect>>', select_branch)
+        
 
-    #root = tk.Tk()
-
-        '''
+        
         listbox=tk.Listbox(window)
         branches = ['branch1', 'branch2', 'branch3'] 
         for branch in branches:
@@ -175,7 +220,8 @@ class BranchMenu:
             result = subprocess.check_output(cmd, cwd=folder_path, universal_newlines=True, encoding='utf-8')
             #result = subprocess.check_output(cmd, cwd=folder_path, universal_newlines=True)
             branches = [branch.strip() for branch in result.splitlines()]
-            return branches
+            modified_branch_list = [branch.replace(" ", "").replace("*", "") for branch in branches]
+            return modified_branch_list
     
     # input : folder_path -> output : current branch 제외한 나머지 branch list 반환
     def get_other_branches(self, folder_path):
