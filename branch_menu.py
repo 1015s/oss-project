@@ -58,7 +58,37 @@ class BranchMenu:
             messagebox.showwarning("알림", "plz write new branch name")
             
     def deleting_branch(self):
-
+        global pathh
+        path=pathh
+        branches = self.branch_list(path)
+        root=tk.Tk()
+        def select_branch(event):
+            selected_indices = listbox.curselection()
+            if selected_indices:
+                last_selected_index = max(selected_indices)
+                selected_branch = listbox.get(last_selected_index)
+                print(selected_branch)
+            #selected_branch = listbox.get(listbox.curselection())
+                response = messagebox.askquestion("Question", "이 브랜치를 삭제하시겠습니까?")
+                if response == 'yes':
+                    print("User chose yes")
+                    self.branch_delete(path,selected_branch)
+                    window.withdraw()
+                elif response == 'no':
+                    print("User chose no")
+                    window.withdraw()            
+            #print(selected_branch)
+        # 새 창 생성
+        window = tk.Toplevel(root)
+        root.withdraw()
+        # 목록 위젯 생성
+        listbox = tk.Listbox(window)
+        listbox.pack()
+        # 브랜치 목록 추가
+        for branch in branches:
+            listbox.insert(tk.END, branch)
+        # 브랜치 선택 이벤트 핸들러 연결
+        listbox.bind('<<ListboxSelect>>', select_branch)
         print("브랜치 삭제")
 
     def renaming_branch(self):
