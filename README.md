@@ -22,6 +22,7 @@ Git has been made easy to use through the GUI.
 - Show file's status
 - Branch management
 - Git clone from GitHub
+- Show Git commit history
 
 <br>
 
